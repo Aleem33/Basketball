@@ -95,12 +95,15 @@ test('administrator can sign in and create a tournament', async ({ page }) => {
   await page.getByLabel('Password').fill('valid-password');
   await page.getByRole('button', { name: 'Sign in' }).click();
   await page.getByRole('link', { name: 'Competitions' }).click();
-  await page.getByLabel('Name').fill('City Championship');
-  await page.getByLabel('Public slug').fill('city-championship');
-  await page.getByLabel('Starts').fill('2026-08-01T10:00');
-  await page.getByLabel('Ends').fill('2026-08-02T10:00');
-  await page.getByRole('button', { name: 'Create tournament' }).click();
-  await expect(page.getByText('City Championship')).toBeVisible();
+  const newTournament = page.getByRole('region', { name: 'New tournament' });
+  await newTournament.getByRole('textbox', { name: 'Name', exact: true }).fill('City Championship');
+  await newTournament.getByLabel('Public slug').fill('city-championship');
+  await newTournament.getByLabel('Starts').fill('2026-08-01T10:00');
+  await newTournament.getByLabel('Ends').fill('2026-08-02T10:00');
+  await newTournament.getByRole('button', { name: 'Create tournament' }).click();
+  await expect(
+    page.getByRole('region', { name: 'Tournament records' }).getByText('City Championship'),
+  ).toBeVisible();
 });
 
 test('organizer can approve a team application with a recorded reason', async ({ page }) => {

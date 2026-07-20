@@ -30,7 +30,6 @@
     "@nestjs/swagger": "^11.2.0",
     "@nestjs/throttler": "^6.4.0",
     "@nestjs/websockets": "^11.1.5",
-    "@prisma/client": "6.13.0",
     "@tournament/config": "workspace:*",
     "@tournament/contracts": "workspace:*",
     "@tournament/shared-types": "workspace:*",
@@ -53,6 +52,7 @@
   "devDependencies": {
     "@nestjs/cli": "^11.0.10",
     "@nestjs/testing": "^11.1.5",
+    "@prisma/client": "6.13.0",
     "@testcontainers/postgresql": "^11.5.1",
     "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",
