@@ -161,8 +161,10 @@ class PublicRepository {
     final Map<String, Object?> data =
         (jsonDecode(encoded) as Map).cast<String, Object?>();
     final DateTime storedAt = DateTime.parse(data['storedAt']! as String);
-    if (DateTime.now().toUtc().difference(storedAt) > const Duration(hours: 24))
+    if (DateTime.now().toUtc().difference(storedAt) >
+        const Duration(hours: 24)) {
       return null;
+    }
     return (data['value']! as List<Object?>);
   }
 

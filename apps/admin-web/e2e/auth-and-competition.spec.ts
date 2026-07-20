@@ -94,7 +94,7 @@ test('administrator can sign in and create a tournament', async ({ page }) => {
   await page.getByLabel('Email address').fill('admin@example.test');
   await page.getByLabel('Password').fill('valid-password');
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.goto('/competitions');
+  await page.getByRole('link', { name: 'Competitions' }).click();
   await page.getByLabel('Name').fill('City Championship');
   await page.getByLabel('Public slug').fill('city-championship');
   await page.getByLabel('Starts').fill('2026-08-01T10:00');
@@ -211,7 +211,7 @@ test('organizer can approve a team application with a recorded reason', async ({
   await page.getByLabel('Email address').fill('organizer@example.test');
   await page.getByLabel('Password').fill('valid-password');
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.goto('/requests');
+  await page.getByRole('link', { name: 'Applications & corrections' }).click();
   await expect(page.getByText('Falcons')).toBeVisible();
   await page.getByLabel('Decision reason').fill('Eligibility and payment verified.');
   await page.getByRole('button', { name: 'Approve' }).click();

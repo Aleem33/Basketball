@@ -72,8 +72,9 @@ class ApiClient {
       InterceptorsWrapper(
         onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
           final String? access = _tokens.accessToken;
-          if (access != null)
+          if (access != null) {
             options.headers['authorization'] = 'Bearer $access';
+          }
           options.headers['x-correlation-id'] = _uuid();
           handler.next(options);
         },
@@ -186,11 +187,12 @@ class ApiClient {
   }
 
   Object? _unwrap(Object? raw) {
-    if (raw is! Map)
+    if (raw is! Map) {
       throw const ApiFailure(
         'The server returned an invalid response.',
         'INVALID_RESPONSE',
       );
+    }
     final Map<String, Object?> envelope = raw.cast<String, Object?>();
     if (envelope['success'] != true) {
       final Map<String, Object?> error =
@@ -214,8 +216,9 @@ class ApiClient {
     if (status == 404 || status == 410) return UnavailableFailure(message);
     if (status == 426) return UpgradeRequiredFailure(message);
     if (status == 503) return MaintenanceFailure(message);
-    if (status == null)
+    if (status == null) {
       return const NetworkFailure('Check your connection and try again.');
+    }
     return ApiFailure(message, 'HTTP_$status');
   }
 

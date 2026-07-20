@@ -10,10 +10,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   }
 
   async onModuleInit(): Promise<void> {
+    if (process.env.OPENAPI_GENERATION === 'true') return;
     await this.$connect();
   }
 
   async onModuleDestroy(): Promise<void> {
+    if (process.env.OPENAPI_GENERATION === 'true') return;
     await this.$disconnect();
   }
 }

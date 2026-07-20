@@ -8,10 +8,11 @@ export const PLATFORM_QUEUE = 'platform-jobs';
 
 @Injectable()
 export class JobQueueService implements OnModuleDestroy {
-  private readonly connection: Redis;
-  private readonly queue: Queue;
+  private readonly connection?: Redis;
+  private readonly queue?: Queue;
 
   constructor(config: ConfigService<Environment, true>) {
+    if (process.env.OPENAPI_GENERATION === 'true') return;
     this.connection = new Redis(config.get('REDIS_URL', { infer: true }), {
       maxRetriesPerRequest: null,
       enableReadyCheck: true,
@@ -21,6 +22,7 @@ export class JobQueueService implements OnModuleDestroy {
   }
 
   async add(outboxEvent: { id: string; eventType: string; payload: object }): Promise<void> {
+    if (!this.queue) return;
     await this.queue.add(
       outboxEvent.eventType,
       {
@@ -38,11 +40,13 @@ export class JobQueueService implements OnModuleDestroy {
     );
   }
 
-  async counts() {
+  async counts(): Promise<Record<string, number>> {
+    if (!this.queue) return { wait: 0, active: 0, completed: 0, failed: 0, delayed: 0 };
     return this.queue.getJobCounts('wait', 'active', 'completed', 'failed', 'delayed');
   }
 
   async onModuleDestroy(): Promise<void> {
+    if (!this.queue || !this.connection) return;
     await this.queue.close();
     this.connection.disconnect();
   }

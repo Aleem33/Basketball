@@ -95,13 +95,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           state.isLoading
                               ? null
                               : () async {
-                                if (_formKey.currentState!.validate())
+                                if (_formKey.currentState!.validate()) {
                                   await ref
                                       .read(authControllerProvider.notifier)
                                       .login(
                                         _email.text.trim(),
                                         _password.text,
                                       );
+                                }
                               },
                       child: Text(state.isLoading ? 'Signing in…' : 'Sign in'),
                     ),
@@ -220,7 +221,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   _password.text,
                                   _name.text.trim(),
                                 );
-                            if (context.mounted)
+                            if (context.mounted) {
                               await showDialog<void>(
                                 context: context,
                                 builder:
@@ -240,6 +241,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                       ],
                                     ),
                               );
+                            }
                           } finally {
                             if (mounted) setState(() => _busy = false);
                           }
@@ -309,7 +311,7 @@ class FavoritesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AuthUser? user = ref.watch(authControllerProvider).valueOrNull;
-    if (user == null)
+    if (user == null) {
       return const Scaffold(
         body: HonestEmptyState(
           title: 'Sign in for favorites',
@@ -317,6 +319,7 @@ class FavoritesScreen extends ConsumerWidget {
               'Favorites and notification preferences are linked to your account.',
         ),
       );
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('Favorites')),
       body: FutureBuilder<FavoritesState>(
@@ -327,12 +330,13 @@ class FavoritesScreen extends ConsumerWidget {
           AsyncSnapshot<FavoritesState> snapshot,
         ) {
           final FavoritesState data = snapshot.data ?? const FavoritesState();
-          if (data.teamIds.isEmpty && data.tournamentIds.isEmpty)
+          if (data.teamIds.isEmpty && data.tournamentIds.isEmpty) {
             return const HonestEmptyState(
               title: 'No favorites yet',
               message:
                   'Follow teams and save tournaments from their public pages.',
             );
+          }
           return ListView(
             children: <Widget>[
               if (data.isOffline) const OfflineBanner(),
@@ -408,10 +412,11 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () async {
                 final String id =
                     await ref.read(authRepositoryProvider).requestDataExport();
-                if (context.mounted)
+                if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Export request accepted: $id')),
                   );
+                }
               },
             ),
             ListTile(
@@ -543,12 +548,13 @@ class _NotificationPreferencesScreenState
                             pushEnabled: _push,
                             consented: _consented,
                           );
-                      if (context.mounted)
+                      if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Notification preference saved.'),
                           ),
                         );
+                      }
                     } finally {
                       if (mounted) setState(() => _busy = false);
                     }

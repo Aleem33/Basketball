@@ -13,8 +13,9 @@ class LiveGameService {
   Stream<GameSummary> get updates => _updates.stream;
 
   void seed(GameSummary game) {
-    if (_current?.id != game.id || game.version >= (_current?.version ?? -1))
+    if (_current?.id != game.id || game.version >= (_current?.version ?? -1)) {
       _current = game;
+    }
   }
 
   void watch(String gameId, int lastKnownVersion) {
@@ -35,8 +36,9 @@ class LiveGameService {
     }, ack: _handleAck);
     socket.onConnect((Object? _) => join());
     socket.on('game.updated', (Object? raw) {
-      if (raw is Map && raw['game'] is Map)
+      if (raw is Map && raw['game'] is Map) {
         _merge((raw['game']! as Map).cast<String, Object?>());
+      }
     });
     socket.onReconnect((Object? _) => join());
     socket.connect();

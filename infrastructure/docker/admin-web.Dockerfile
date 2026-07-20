@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-FROM node:22.17.0-bookworm-slim AS base
+FROM node:22.23.1-bookworm-slim AS base
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 RUN corepack enable && corepack prepare pnpm@11.9.0 --activate
@@ -29,7 +29,7 @@ COPY packages packages
 COPY apps/admin-web apps/admin-web
 RUN pnpm --filter @tournament/admin-web... build
 
-FROM node:22.17.0-bookworm-slim AS runtime
+FROM node:22.23.1-bookworm-slim AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 RUN groupadd --system --gid 10001 nextjs && useradd --system --uid 10001 --gid nextjs nextjs

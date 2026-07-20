@@ -117,7 +117,7 @@ services:
       redis: { condition: service_healthy }
       minio: { condition: service_healthy }
       minio-init: { condition: service_completed_successfully }
-    command: ['sh', '-c', './node_modules/.bin/prisma migrate deploy && node dist/src/main.js']
+      migrate: { condition: service_completed_successfully }
     healthcheck:
       test:
         [
@@ -132,6 +132,17 @@ services:
     networks: [internal]
     restart: unless-stopped
 
+  migrate:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/api.Dockerfile
+      target: migrations
+    environment: *api-environment
+    depends_on:
+      postgres: { condition: service_healthy }
+    networks: [internal]
+    restart: 'no'
+
   worker:
     build:
       context: .
@@ -142,6 +153,7 @@ services:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
       minio: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
     networks: [internal]
     restart: unless-stopped
 

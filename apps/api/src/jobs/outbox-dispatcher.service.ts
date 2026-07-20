@@ -15,6 +15,7 @@ export class OutboxDispatcherService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit(): void {
+    if (process.env.OPENAPI_GENERATION === 'true') return;
     this.timer = setInterval(() => void this.dispatchBatch(), 1000);
     this.timer.unref();
   }
