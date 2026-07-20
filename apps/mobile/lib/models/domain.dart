@@ -1,6 +1,16 @@
 import 'package:flutter/foundation.dart';
 
-enum GameStatus { draft, scheduled, live, paused, finalScore, postponed, cancelled, abandoned, forfeited }
+enum GameStatus {
+  draft,
+  scheduled,
+  live,
+  paused,
+  finalScore,
+  postponed,
+  cancelled,
+  abandoned,
+  forfeited,
+}
 
 GameStatus gameStatusFromJson(String value) => switch (value) {
   'DRAFT' => GameStatus.draft,
@@ -26,14 +36,15 @@ class TournamentSummary {
     required this.status,
   });
 
-  factory TournamentSummary.fromJson(Map<String, Object?> json) => TournamentSummary(
-    id: json['id']! as String,
-    name: json['name']! as String,
-    slug: json['slug']! as String,
-    startsAt: DateTime.parse(json['startsAt']! as String),
-    endsAt: DateTime.parse(json['endsAt']! as String),
-    status: json['status']! as String,
-  );
+  factory TournamentSummary.fromJson(Map<String, Object?> json) =>
+      TournamentSummary(
+        id: json['id']! as String,
+        name: json['name']! as String,
+        slug: json['slug']! as String,
+        startsAt: DateTime.parse(json['startsAt']! as String),
+        endsAt: DateTime.parse(json['endsAt']! as String),
+        status: json['status']! as String,
+      );
 
   final String id;
   final String name;
@@ -45,7 +56,12 @@ class TournamentSummary {
 
 @immutable
 class TeamSummary {
-  const TeamSummary({required this.id, required this.name, this.shortName, this.logoUrl});
+  const TeamSummary({
+    required this.id,
+    required this.name,
+    this.shortName,
+    this.logoUrl,
+  });
 
   factory TeamSummary.fromJson(Map<String, Object?> json) => TeamSummary(
     id: json['id']! as String,
@@ -78,8 +94,18 @@ class GameSummary {
     id: json['id']! as String,
     scheduledAt: DateTime.parse(json['scheduledAt']! as String),
     status: gameStatusFromJson(json['status']! as String),
-    homeTeam: json['homeTeam'] == null ? null : TeamSummary.fromJson((json['homeTeam']! as Map).cast<String, Object?>()),
-    awayTeam: json['awayTeam'] == null ? null : TeamSummary.fromJson((json['awayTeam']! as Map).cast<String, Object?>()),
+    homeTeam:
+        json['homeTeam'] == null
+            ? null
+            : TeamSummary.fromJson(
+              (json['homeTeam']! as Map).cast<String, Object?>(),
+            ),
+    awayTeam:
+        json['awayTeam'] == null
+            ? null
+            : TeamSummary.fromJson(
+              (json['awayTeam']! as Map).cast<String, Object?>(),
+            ),
     homeScore: json['homeScore']! as int,
     awayScore: json['awayScore']! as int,
     version: json['version']! as int,

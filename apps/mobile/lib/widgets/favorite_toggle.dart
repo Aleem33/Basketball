@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +23,7 @@ class _FavoriteToggleState extends ConsumerState<FavoriteToggle> {
   @override
   void initState() {
     super.initState();
-    _load();
+    unawaited(_load());
   }
 
   Future<void> _load() async {
@@ -33,9 +35,10 @@ class _FavoriteToggleState extends ConsumerState<FavoriteToggle> {
       final state = await ref.read(favoritesRepositoryProvider).fetch();
       if (mounted) {
         setState(() {
-          _favorite = widget.kind == FavoriteKind.team
-              ? state.teamIds.contains(widget.id)
-              : state.tournamentIds.contains(widget.id);
+          _favorite =
+              widget.kind == FavoriteKind.team
+                  ? state.teamIds.contains(widget.id)
+                  : state.tournamentIds.contains(widget.id);
           _busy = false;
         });
       }
@@ -46,7 +49,7 @@ class _FavoriteToggleState extends ConsumerState<FavoriteToggle> {
 
   Future<void> _toggle() async {
     if (ref.read(authControllerProvider).valueOrNull == null) {
-      context.push('/login');
+      await context.push('/login');
       return;
     }
     setState(() => _busy = true);

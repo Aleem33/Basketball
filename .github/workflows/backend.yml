@@ -93,6 +93,8 @@ jobs:
         with: { node-version: 22.17.0, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @tournament/api prisma:generate
+      - name: Build shared workspace packages for type-aware linting
+        run: pnpm --filter './packages/*' build
       - run: pnpm format:check
       - run: pnpm --filter @tournament/api... lint
       - run: pnpm --filter @tournament/api... typecheck

@@ -7,5 +7,10 @@ import 'providers/providers.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences preferences = await SharedPreferences.getInstance();
-  runApp(ProviderScope(overrides: [sharedPreferencesProvider.overrideWithValue(preferences)], child: const TournamentApp()));
+  runApp(
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(preferences)],
+      child: const TournamentApp(),
+    ),
+  );
 }

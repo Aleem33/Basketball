@@ -10,7 +10,8 @@ void main() {
   test('offline favorite cache starts empty and is explicitly stale', () async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
     final SharedPreferences preferences = await SharedPreferences.getInstance();
-    final FavoritesState state = FavoritesRepository(MockApiClient(), preferences).cached();
+    final FavoritesState state =
+        FavoritesRepository(MockApiClient(), preferences).cached();
     expect(state.teamIds, isEmpty);
     expect(state.tournamentIds, isEmpty);
     expect(state.isOffline, isTrue);

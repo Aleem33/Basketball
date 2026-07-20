@@ -8,24 +8,35 @@ class LiveGameService {
   final AppConfig _config;
   io.Socket? _socket;
   GameSummary? _current;
-  final StreamController<GameSummary> _updates = StreamController<GameSummary>.broadcast();
+  final StreamController<GameSummary> _updates =
+      StreamController<GameSummary>.broadcast();
   Stream<GameSummary> get updates => _updates.stream;
 
   void seed(GameSummary game) {
-    if (_current?.id != game.id || game.version >= (_current?.version ?? -1)) _current = game;
+    if (_current?.id != game.id || game.version >= (_current?.version ?? -1))
+      _current = game;
   }
 
   void watch(String gameId, int lastKnownVersion) {
     unawaited(stop());
     final io.Socket socket = io.io(
       _config.websocketUrl.toString(),
-      io.OptionBuilder().setPath('/live/socket.io').setTransports(<String>['websocket']).disableAutoConnect().enableReconnection().build(),
+      io.OptionBuilder()
+          .setPath('/live/socket.io')
+          .setTransports(<String>['websocket'])
+          .disableAutoConnect()
+          .enableReconnection()
+          .build(),
     );
     _socket = socket;
-    void join() => socket.emitWithAck('game.join', <String, Object>{'gameId': gameId, 'lastKnownVersion': _current?.version ?? lastKnownVersion}, ack: _handleAck);
+    void join() => socket.emitWithAck('game.join', <String, Object>{
+      'gameId': gameId,
+      'lastKnownVersion': _current?.version ?? lastKnownVersion,
+    }, ack: _handleAck);
     socket.onConnect((Object? _) => join());
     socket.on('game.updated', (Object? raw) {
-      if (raw is Map && raw['game'] is Map) _merge((raw['game']! as Map).cast<String, Object?>());
+      if (raw is Map && raw['game'] is Map)
+        _merge((raw['game']! as Map).cast<String, Object?>());
     });
     socket.onReconnect((Object? _) => join());
     socket.connect();
@@ -49,7 +60,10 @@ class LiveGameService {
     final int nextVersion = (state['version'] as int?) ?? current.version;
     if (nextVersion < current.version) return;
     final GameSummary next = current.copyWith(
-      status: state['status'] is String ? gameStatusFromJson(state['status']! as String) : null,
+      status:
+          state['status'] is String
+              ? gameStatusFromJson(state['status']! as String)
+              : null,
       homeScore: state['homeScore'] as int?,
       awayScore: state['awayScore'] as int?,
       currentPeriod: state['currentPeriod'] as int?,

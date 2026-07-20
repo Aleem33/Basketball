@@ -10,7 +10,9 @@ void main() {
     expect(appRouter.routeInformationParser, isNotNull);
   });
 
-  testWidgets('invalid deep link has an honest unavailable state', (WidgetTester tester) async {
+  testWidgets('invalid deep link has an honest unavailable state', (
+    WidgetTester tester,
+  ) async {
     appRouter.go('/not-a-route');
     await tester.pumpWidget(MaterialApp.router(routerConfig: appRouter));
     await tester.pumpAndSettle();
