@@ -1,0 +1,2000 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/verify-email": {
+      "post": {
+        "operationId": "AuthController_verifyEmail",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/password-reset/request": {
+      "post": {
+        "operationId": "AuthController_requestPasswordReset",
+        "parameters": [],
+        "responses": {
+          "202": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/password-reset/complete": {
+      "post": {
+        "operationId": "AuthController_completePasswordReset",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/password/change": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/logout-all": {
+      "post": {
+        "operationId": "AuthController_logoutAll",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/account/export": {
+      "post": {
+        "operationId": "AuthController_requestExport",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/account/delete": {
+      "post": {
+        "operationId": "AuthController_requestDeletion",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/auth/account/requests/{requestId}": {
+      "get": {
+        "operationId": "AuthController_dataRequest",
+        "parameters": [
+          {
+            "name": "requestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["authentication"]
+      }
+    },
+    "/api/v1/me/access": {
+      "get": {
+        "operationId": "AccessController_access",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      }
+    },
+    "/api/v1/me/scoring-games": {
+      "get": {
+        "operationId": "AccessController_scoringGames",
+        "parameters": [
+          {
+            "name": "x-organization-id",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments": {
+      "get": {
+        "operationId": "AccessController_tournaments",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      },
+      "post": {
+        "operationId": "ManagementController_createTournament",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams": {
+      "get": {
+        "operationId": "AccessController_teams",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      },
+      "post": {
+        "operationId": "ManagementController_createTeam",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams/{teamId}/workspace": {
+      "get": {
+        "operationId": "AccessController_teamWorkspace",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/games": {
+      "get": {
+        "operationId": "AccessController_games",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/rosters": {
+      "get": {
+        "operationId": "AccessController_rosters",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/audit": {
+      "get": {
+        "operationId": "AccessController_audit",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["access and private queries"]
+      }
+    },
+    "/api/v1/public/tournaments": {
+      "get": {
+        "operationId": "PublicController_tournaments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/tournaments/{id}": {
+      "get": {
+        "operationId": "PublicController_tournament",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/games": {
+      "get": {
+        "operationId": "PublicController_games",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/games/{id}": {
+      "get": {
+        "operationId": "PublicController_game",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/teams/{id}": {
+      "get": {
+        "operationId": "PublicController_team",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/leagues": {
+      "get": {
+        "operationId": "PublicController_leagues",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/leagues/{id}": {
+      "get": {
+        "operationId": "PublicController_league",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/venues": {
+      "get": {
+        "operationId": "PublicController_venues",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/announcements": {
+      "get": {
+        "operationId": "PublicController_announcements",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/stages/{id}/standings": {
+      "get": {
+        "operationId": "PublicController_standings",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/stages/{id}/bracket": {
+      "get": {
+        "operationId": "PublicController_bracket",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/public/search": {
+      "get": {
+        "operationId": "PublicController_search",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["public"]
+      }
+    },
+    "/api/v1/management/organizations": {
+      "post": {
+        "operationId": "ManagementController_createOrganization",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/dashboard": {
+      "get": {
+        "operationId": "ManagementController_dashboard",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/leagues": {
+      "post": {
+        "operationId": "ManagementController_createLeague",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/seasons": {
+      "post": {
+        "operationId": "ManagementController_createSeason",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}": {
+      "patch": {
+        "operationId": "ManagementController_updateTournament",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/divisions": {
+      "post": {
+        "operationId": "ManagementController_createDivision",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/divisions/{divisionId}/stages": {
+      "post": {
+        "operationId": "ManagementController_createStage",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "divisionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/venues": {
+      "post": {
+        "operationId": "ManagementController_createVenue",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/venues/{venueId}/courts": {
+      "post": {
+        "operationId": "ManagementController_createCourt",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "venueId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams/{teamId}": {
+      "patch": {
+        "operationId": "ManagementController_updateTeam",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams/{teamId}/players": {
+      "post": {
+        "operationId": "ManagementController_createPlayer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams/{teamId}/players/{playerId}": {
+      "patch": {
+        "operationId": "ManagementController_updatePlayer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "playerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      },
+      "delete": {
+        "operationId": "ManagementController_archivePlayer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "playerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams/{teamId}/rosters": {
+      "post": {
+        "operationId": "ManagementController_createRoster",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams/{teamId}/rosters/{rosterId}/players": {
+      "post": {
+        "operationId": "ManagementController_upsertRosterPlayer",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rosterId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/teams/{teamId}/rosters/{rosterId}/submit": {
+      "post": {
+        "operationId": "ManagementController_submitRoster",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rosterId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/rosters/{rosterId}/decision": {
+      "post": {
+        "operationId": "ManagementController_decideRoster",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rosterId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/teams/{teamId}/applications": {
+      "post": {
+        "operationId": "ManagementController_submitTeamApplication",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/team-applications": {
+      "get": {
+        "operationId": "ManagementController_teamApplications",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/team-applications/{applicationId}/decision": {
+      "post": {
+        "operationId": "ManagementController_decideTeamApplication",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "applicationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/teams/{teamId}/corrections": {
+      "post": {
+        "operationId": "ManagementController_createCorrectionRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/corrections": {
+      "get": {
+        "operationId": "ManagementController_correctionRequests",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/tournaments/{tournamentId}/corrections/{correctionId}/decision": {
+      "post": {
+        "operationId": "ManagementController_resolveCorrectionRequest",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "correctionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/exports/{resource}": {
+      "get": {
+        "operationId": "ManagementController_exportCsv",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/management/organizations/{organizationId}/announcements": {
+      "post": {
+        "operationId": "ManagementController_createAnnouncement",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["management"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games": {
+      "post": {
+        "operationId": "GamesController_createFixture",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/tournaments/{tournamentId}/stages/{stageId}/schedule/round-robin": {
+      "post": {
+        "operationId": "GamesController_roundRobin",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/tournaments/{tournamentId}/stages/{stageId}/brackets": {
+      "post": {
+        "operationId": "GamesController_bracket",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games/{gameId}/scorekeepers": {
+      "post": {
+        "operationId": "GamesController_assignScorekeeper",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games/{gameId}/reschedule": {
+      "post": {
+        "operationId": "GamesController_reschedule",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games/{gameId}/status": {
+      "post": {
+        "operationId": "GamesController_status",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/stages/{stageId}/standings/recalculate": {
+      "post": {
+        "operationId": "GamesController_recalculateStandings",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/stages/{stageId}/standings/manual-override": {
+      "post": {
+        "operationId": "GamesController_manualOverride",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stageId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["games and competition rules"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games/{gameId}/scoring/lease": {
+      "post": {
+        "operationId": "LiveScoringController_acquireLease",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["live scoring"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games/{gameId}/scoring/lease/heartbeat": {
+      "post": {
+        "operationId": "LiveScoringController_heartbeat",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["live scoring"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games/{gameId}/scoring/events": {
+      "post": {
+        "operationId": "LiveScoringController_score",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-scoring-lease-token",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["live scoring"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/games/{gameId}/scoring/transitions": {
+      "post": {
+        "operationId": "LiveScoringController_transition",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gameId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["live scoring"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/media/upload-requests": {
+      "post": {
+        "operationId": "StorageController_requestUpload",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["media"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/media/upload-completions": {
+      "post": {
+        "operationId": "StorageController_completeUpload",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["media"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/media/teams/{teamId}/upload-requests": {
+      "post": {
+        "operationId": "StorageController_requestTeamLogoUpload",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["media"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/media/teams/{teamId}/upload-completions": {
+      "post": {
+        "operationId": "StorageController_completeTeamLogoUpload",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["media"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/media/teams/{teamId}/logo": {
+      "post": {
+        "operationId": "StorageController_replaceTeamLogo",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["media"]
+      }
+    },
+    "/api/v1/me/favorites": {
+      "get": {
+        "operationId": "FansController_favorites",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["fan personalization"]
+      }
+    },
+    "/api/v1/me/favorites/teams/{teamId}": {
+      "put": {
+        "operationId": "FansController_favoriteTeam",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["fan personalization"]
+      },
+      "delete": {
+        "operationId": "FansController_unfavoriteTeam",
+        "parameters": [
+          {
+            "name": "teamId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["fan personalization"]
+      }
+    },
+    "/api/v1/me/favorites/tournaments/{tournamentId}": {
+      "put": {
+        "operationId": "FansController_favoriteTournament",
+        "parameters": [
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["fan personalization"]
+      },
+      "delete": {
+        "operationId": "FansController_unfavoriteTournament",
+        "parameters": [
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["fan personalization"]
+      }
+    },
+    "/api/v1/me/notification-preferences": {
+      "put": {
+        "operationId": "FansController_preference",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["fan personalization"]
+      }
+    },
+    "/api/v1/me/devices": {
+      "post": {
+        "operationId": "FansController_registerDevice",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["fan personalization"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/invitations": {
+      "post": {
+        "operationId": "InvitationsController_create",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["invitations and access management"]
+      }
+    },
+    "/api/v1/invitations/accept": {
+      "post": {
+        "operationId": "InvitationsController_accept",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["invitations and access management"]
+      }
+    },
+    "/api/v1/organizations/{organizationId}/role-assignments": {
+      "post": {
+        "operationId": "InvitationsController_assign",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": ["invitations and access management"]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_health",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["operations"]
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["operations"]
+      }
+    },
+    "/api/v1/version": {
+      "get": {
+        "operationId": "HealthController_version",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["operations"]
+      }
+    },
+    "/api/v1/metrics": {
+      "get": {
+        "operationId": "HealthController_metrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["operations"]
+      }
+    },
+    "/api/v1/operations/queues": {
+      "get": {
+        "operationId": "HealthController_queueHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["operations"]
+      }
+    }
+  },
+  "info": {
+    "title": "Basketball Tournament Platform API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {}
+  }
+}
