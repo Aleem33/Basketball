@@ -1,0 +1,11 @@
+.git
+.github
+**/.env
+**/.next
+**/build
+**/coverage
+**/dist
+**/node_modules
+apps/mobile
+docs
+*.log

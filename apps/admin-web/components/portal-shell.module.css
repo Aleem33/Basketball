@@ -1,0 +1,110 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template: auto 1fr / 15rem minmax(0, 1fr);
+}
+.header {
+  grid-column: 1 / -1;
+  min-height: 4.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0.65rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand {
+  font-weight: 800;
+  color: var(--brand-primary);
+  text-decoration: none;
+  font-size: 1.1rem;
+}
+.organizationPicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.organizationPicker select {
+  min-height: 2.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  padding: 0.4rem;
+  color: var(--text);
+  background: #fff;
+}
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.sidebar {
+  background: #172b3d;
+  padding: 1rem 0.7rem;
+}
+.sidebar nav {
+  display: grid;
+  gap: 0.25rem;
+  position: sticky;
+  top: 5.2rem;
+}
+.sidebar a {
+  color: #e6eef5;
+  text-decoration: none;
+  border-radius: 0.4rem;
+  padding: 0.72rem 0.8rem;
+}
+.sidebar a:hover,
+.sidebar a[aria-current='page'] {
+  background: #294861;
+  color: #fff;
+}
+.main {
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 90rem;
+  overflow: hidden;
+}
+.center {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+@media (max-width: 820px) {
+  .shell {
+    display: block;
+  }
+  .header {
+    flex-wrap: wrap;
+    position: static;
+  }
+  .organizationPicker {
+    order: 3;
+    width: 100%;
+    margin: 0;
+  }
+  .organizationPicker select {
+    flex: 1;
+  }
+  .userMenu span {
+    display: none;
+  }
+  .sidebar {
+    overflow-x: auto;
+  }
+  .sidebar nav {
+    display: flex;
+    width: max-content;
+    position: static;
+  }
+  .main {
+    padding: 1rem;
+  }
+}

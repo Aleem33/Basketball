@@ -1,0 +1,9 @@
+title = "Tournament platform secret scanning"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Explicit test-only values in CI"
+paths = ['''\.github/workflows/.*\.yml''']
+regexes = ['''test-only-[A-Za-z0-9-]+''', '''AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE=''']

@@ -1,0 +1,39 @@
+name: Flutter Android
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/mobile/**', '.github/workflows/flutter.yml']
+  pull_request:
+    paths: ['apps/mobile/**', '.github/workflows/flutter.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.29.3
+          channel: stable
+          cache: true
+      - name: Complete deterministic native scaffolding
+        run: flutter create --platforms=android --org=com.client --project-name=tournament_mobile .
+      - run: dart format --output=none --set-exit-if-changed lib test integration_test
+      - run: flutter pub get
+      - run: flutter analyze --fatal-infos
+      - run: flutter test --coverage
+      - name: Build unsigned release application bundle
+        run: flutter build appbundle --release --dart-define=API_URL=https://api.example.invalid/api/v1 --dart-define=WEBSOCKET_URL=https://api.example.invalid/live --dart-define=APP_NAME="Tournament Platform"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-unsigned-release
+          path: apps/mobile/build/app/outputs/bundle/release/*.aab
+          retention-days: 14

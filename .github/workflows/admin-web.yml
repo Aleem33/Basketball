@@ -1,0 +1,44 @@
+name: Admin portal
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/admin-web/**', 'packages/**', 'pnpm-lock.yaml', '.github/workflows/admin-web.yml']
+  pull_request:
+    paths: ['apps/admin-web/**', 'packages/**', 'pnpm-lock.yaml', '.github/workflows/admin-web.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_API_URL: http://127.0.0.1:4000/api/v1
+      NEXT_PUBLIC_WEBSOCKET_URL: http://127.0.0.1:4000/live
+      NEXT_PUBLIC_APP_NAME: Tournament Platform
+      NEXT_PUBLIC_PRIMARY_COLOR: '#174A7E'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.9.0, run_install: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22.17.0, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @tournament/admin-web... lint
+      - run: pnpm --filter @tournament/admin-web... typecheck
+      - run: pnpm --filter @tournament/admin-web test:coverage
+      - run: pnpm --filter @tournament/admin-web... build
+      - run: pnpm --filter @tournament/admin-web exec playwright install --with-deps chromium
+      - run: pnpm --filter @tournament/admin-web test:e2e
+      - name: Upload failed browser evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-playwright-failure
+          path: |
+            apps/admin-web/playwright-report
+            apps/admin-web/test-results
+          if-no-files-found: ignore
+          retention-days: 7

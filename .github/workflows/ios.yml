@@ -1,0 +1,39 @@
+name: Flutter iOS
+
+on:
+  push:
+    branches: [main]
+    paths: ['apps/mobile/**', '.github/workflows/ios.yml']
+  pull_request:
+    paths: ['apps/mobile/**', '.github/workflows/ios.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.29.3
+          channel: stable
+          cache: true
+      - name: Complete deterministic native scaffolding
+        run: flutter create --platforms=ios --org=com.client --project-name=tournament_mobile .
+      - run: flutter pub get
+      - run: flutter analyze --fatal-infos
+      - run: flutter test
+      - run: cd ios && pod install --repo-update
+      - name: Build without signing
+        run: flutter build ios --release --no-codesign --dart-define=API_URL=https://api.example.invalid/api/v1 --dart-define=WEBSOCKET_URL=https://api.example.invalid/live --dart-define=APP_NAME="Tournament Platform"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-unsigned-app
+          path: apps/mobile/build/ios/iphoneos/Runner.app
+          retention-days: 14
