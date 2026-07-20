@@ -1,0 +1,45 @@
+# dependencies and builds
+node_modules/
+.tmp-package-fetch/
+dist/
+build/
+.next/
+coverage/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+
+# environment and secrets
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.p12
+*.mobileprovision
+*.jks
+*.keystore
+key.properties
+
+# generated/runtime
+apps/api/generated/
+*.log
+*.pid
+*.tsbuildinfo
+playwright-report/
+test-results/
+
+# editors and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# mobile signing and generated platform state
+apps/mobile/android/local.properties
+apps/mobile/ios/Flutter/ephemeral/
+apps/mobile/ios/Pods/
+apps/mobile/ios/.symlinks/

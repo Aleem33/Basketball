@@ -1,0 +1,9 @@
+.next
+build
+coverage
+dist
+generated
+node_modules
+pnpm-lock.yaml
+apps/mobile/android
+apps/mobile/ios

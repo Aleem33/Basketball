@@ -1,0 +1,1253 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  LOCKED
+  DELETION_REQUESTED
+  DEACTIVATED
+}
+
+enum MembershipStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+  LEFT
+}
+
+enum ScopeType {
+  PLATFORM
+  ORGANIZATION
+  TOURNAMENT
+  TEAM
+  GAME
+}
+
+enum TournamentStatus {
+  DRAFT
+  REGISTRATION
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum CompetitionFormat {
+  MANUAL
+  SINGLE_ROUND_ROBIN
+  DOUBLE_ROUND_ROBIN
+  SINGLE_ELIMINATION
+  GROUPS_THEN_KNOCKOUT
+}
+
+enum RosterStatus {
+  DRAFT
+  SUBMITTED
+  CHANGES_REQUESTED
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum SubmissionDecision {
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+enum GameStatus {
+  DRAFT
+  SCHEDULED
+  LIVE
+  PAUSED
+  FINAL
+  POSTPONED
+  CANCELLED
+  ABANDONED
+  FORFEITED
+}
+
+enum GameAssignmentType {
+  SCOREKEEPER
+  TOURNAMENT_MANAGER
+  OFFICIAL
+}
+
+enum ScoreEventType {
+  ADD_ONE
+  ADD_TWO
+  ADD_THREE
+  CORRECTION
+  TIMEOUT
+  NOTE
+}
+
+enum StateTransitionType {
+  GAME_STARTED
+  PERIOD_STARTED
+  PERIOD_PAUSED
+  PERIOD_ENDED
+  OVERTIME_STARTED
+  GAME_ENDED
+  GAME_FINALIZED
+  GAME_REOPENED
+  STATUS_CHANGED
+}
+
+enum TeamMemberRole {
+  COACH
+  TEAM_MANAGER
+  ASSISTANT_COACH
+}
+
+enum PlayerPosition {
+  POINT_GUARD
+  SHOOTING_GUARD
+  SMALL_FORWARD
+  POWER_FORWARD
+  CENTER
+  UTILITY
+}
+
+enum Visibility {
+  PRIVATE
+  MEMBERS
+  PUBLIC
+}
+
+enum RequestStatus {
+  OPEN
+  IN_REVIEW
+  APPROVED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+enum MediaStatus {
+  PENDING_UPLOAD
+  AVAILABLE
+  REPLACED
+  DELETION_PENDING
+  DELETED
+  REJECTED
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  PUBLISHED
+  FAILED
+}
+
+enum JobStatus {
+  QUEUED
+  ACTIVE
+  SUCCEEDED
+  FAILED
+  DEAD_LETTER
+}
+
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  IN_APP
+}
+
+enum NotificationDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+  INVALID_TARGET
+  SUPPRESSED
+}
+
+enum DevicePlatform {
+  ANDROID
+  IOS
+  WEB
+}
+
+enum DataRequestType {
+  EXPORT
+  DELETION
+}
+
+model Organization {
+  id                      String                    @id @default(uuid()) @db.Uuid
+  name                    String                    @db.VarChar(160)
+  slug                    String                    @unique @db.VarChar(80)
+  settings                Json                      @default("{}")
+  version                 Int                       @default(1)
+  createdAt               DateTime                  @default(now()) @db.Timestamptz(6)
+  updatedAt               DateTime                  @updatedAt @db.Timestamptz(6)
+  archivedAt              DateTime?                 @db.Timestamptz(6)
+  memberships             OrganizationMembership[]
+  tournaments             Tournament[]
+  leagues                 League[]
+  seasons                 Season[]
+  divisions               Division[]
+  stages                  CompetitionStage[]
+  ruleSets                CompetitionRuleSet[]
+  venues                  Venue[]
+  courts                  Court[]
+  teams                   Team[]
+  teamMemberships         TeamMembership[]
+  players                 Player[]
+  rosters                 Roster[]
+  rosterSubmissions       RosterSubmission[]
+  games                   Game[]
+  gameAssignments         GameAssignment[]
+  gamePeriods             GamePeriod[]
+  scoreEvents             GameScoreEvent[]
+  stateTransitions        GameStateTransition[]
+  standings               Standing[]
+  standingSnapshots       StandingSnapshot[]
+  brackets                Bracket[]
+  bracketRounds           BracketRound[]
+  bracketLinks            BracketMatchLink[]
+  announcements           Announcement[]
+  correctionRequests      CorrectionRequest[]
+  mediaAssets             MediaAsset[]
+  auditLogs               AuditLog[]
+  outboxEvents            OutboxEvent[]
+  backgroundJobs          BackgroundJobRecord[]
+  notificationPreferences NotificationPreference[]
+  deviceRegistrations     DeviceRegistration[]
+  notificationDeliveries  NotificationDelivery[]
+  invitations             Invitation[]
+  dataRequests            DataRequest[]
+  scoringLeases           ScoringLease[]
+  teamApplications        TeamApplication[]
+
+  @@index([archivedAt])
+}
+
+model User {
+  id                       String                    @id @default(uuid()) @db.Uuid
+  email                    String                    @unique @db.VarChar(320)
+  passwordHash             String                    @db.VarChar(255)
+  status                   UserStatus                @default(PENDING_VERIFICATION)
+  emailVerifiedAt          DateTime?                 @db.Timestamptz(6)
+  platformSuperAdmin       Boolean                   @default(false)
+  failedLoginCount         Int                       @default(0)
+  lastFailedLoginAt        DateTime?                 @db.Timestamptz(6)
+  lockedUntil              DateTime?                 @db.Timestamptz(6)
+  passwordChangedAt        DateTime                  @default(now()) @db.Timestamptz(6)
+  createdAt                DateTime                  @default(now()) @db.Timestamptz(6)
+  updatedAt                DateTime                  @updatedAt @db.Timestamptz(6)
+  deletedAt                DateTime?                 @db.Timestamptz(6)
+  profile                  UserProfile?
+  sessions                 Session[]
+  verificationTokens       EmailVerificationToken[]
+  passwordResetTokens      PasswordResetToken[]
+  memberships              OrganizationMembership[]
+  teamMemberships          TeamMembership[]
+  rosterSubmissions        RosterSubmission[]        @relation("RosterSubmittedBy")
+  rosterDecisions          RosterSubmission[]        @relation("RosterDecidedBy")
+  gameAssignments          GameAssignment[]
+  scoreEvents              GameScoreEvent[]
+  stateTransitions         GameStateTransition[]
+  manualStandingOverrides  Standing[]                @relation("StandingOverrideBy")
+  favoritesTeams           FavoriteTeam[]
+  favoritesTournaments     FavoriteTournament[]
+  notificationPreferences  NotificationPreference[]
+  deviceRegistrations      DeviceRegistration[]
+  announcementsAuthored    Announcement[]
+  correctionRequests       CorrectionRequest[]       @relation("CorrectionRequestedBy")
+  correctionResolutions    CorrectionRequest[]       @relation("CorrectionResolvedBy")
+  mediaAssetsCreated       MediaAsset[]              @relation("MediaCreatedBy")
+  auditLogs                AuditLog[]
+  impersonationAuditLogs   AuditLog[]                @relation("AuditImpersonatedUser")
+  invitationsSent          Invitation[]              @relation("InvitationSentBy")
+  dataRequests             DataRequest[]
+  scoringLeases            ScoringLease[]
+  teamApplicationDecisions TeamApplication[]         @relation("TeamApplicationDecidedBy")
+  teamApplicationsSubmitted TeamApplication[]        @relation("TeamApplicationSubmittedBy")
+  notificationDeliveries   NotificationDelivery[]
+
+  @@index([status, lockedUntil])
+  @@index([deletedAt])
+}
+
+model UserProfile {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @unique @db.Uuid
+  displayName         String   @db.VarChar(120)
+  givenName           String?  @db.VarChar(80)
+  familyName          String?  @db.VarChar(80)
+  timezone            String   @default("UTC") @db.VarChar(64)
+  locale              String   @default("en") @db.VarChar(16)
+  publicPlayerProfile Boolean  @default(false)
+  createdAt           DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt           DateTime @updatedAt @db.Timestamptz(6)
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  familyId         String    @db.Uuid
+  refreshTokenHash String    @unique @db.VarChar(128)
+  userAgentHash    String?   @db.VarChar(128)
+  ipAddress        String?   @db.Inet
+  rotationCounter  Int       @default(0)
+  lastUsedAt       DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt        DateTime  @db.Timestamptz(6)
+  revokedAt        DateTime? @db.Timestamptz(6)
+  revokeReason     String?   @db.VarChar(160)
+  createdAt        DateTime  @default(now()) @db.Timestamptz(6)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([familyId])
+  @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique @db.VarChar(128)
+  expiresAt DateTime  @db.Timestamptz(6)
+  usedAt    DateTime? @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique @db.VarChar(128)
+  expiresAt DateTime  @db.Timestamptz(6)
+  usedAt    DateTime? @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model OrganizationMembership {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  userId         String           @db.Uuid
+  status         MembershipStatus @default(INVITED)
+  joinedAt       DateTime?        @db.Timestamptz(6)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(6)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  roles          MembershipRole[]
+
+  @@unique([organizationId, userId])
+  @@index([userId, status])
+}
+
+model Role {
+  id          String           @id @default(uuid()) @db.Uuid
+  key         String           @unique @db.VarChar(80)
+  name        String           @db.VarChar(120)
+  description String?          @db.VarChar(500)
+  scopeType   ScopeType
+  system      Boolean          @default(true)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(6)
+  permissions RolePermission[]
+  assignments MembershipRole[]
+}
+
+model Permission {
+  id          String           @id @default(uuid()) @db.Uuid
+  key         String           @unique @db.VarChar(120)
+  description String           @db.VarChar(500)
+  createdAt   DateTime         @default(now()) @db.Timestamptz(6)
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String     @db.Uuid
+  permissionId String     @db.Uuid
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model MembershipRole {
+  id           String                 @id @default(uuid()) @db.Uuid
+  membershipId String                 @db.Uuid
+  roleId       String                 @db.Uuid
+  tournamentId String?                @db.Uuid
+  teamId       String?                @db.Uuid
+  gameId       String?                @db.Uuid
+  grantedAt    DateTime               @default(now()) @db.Timestamptz(6)
+  expiresAt    DateTime?              @db.Timestamptz(6)
+  membership   OrganizationMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  role         Role                   @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  tournament   Tournament?            @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  team         Team?                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  game         Game?                  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([membershipId, roleId])
+  @@index([tournamentId])
+  @@index([teamId])
+  @@index([gameId])
+}
+
+model League {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  name           String       @db.VarChar(160)
+  slug           String       @db.VarChar(80)
+  description    String?      @db.Text
+  published      Boolean      @default(false)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  seasons        Season[]
+  tournaments    Tournament[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, published, archivedAt])
+}
+
+model Season {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  leagueId       String       @db.Uuid
+  name           String       @db.VarChar(160)
+  startsAt       DateTime     @db.Timestamptz(6)
+  endsAt         DateTime     @db.Timestamptz(6)
+  published      Boolean      @default(false)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  league         League       @relation(fields: [leagueId], references: [id], onDelete: Restrict)
+  tournaments    Tournament[]
+  rosters        Roster[]
+
+  @@unique([leagueId, name])
+  @@index([organizationId, startsAt, endsAt])
+}
+
+model Tournament {
+  id              String            @id @default(uuid()) @db.Uuid
+  organizationId  String            @db.Uuid
+  leagueId        String?           @db.Uuid
+  seasonId        String?           @db.Uuid
+  name            String            @db.VarChar(180)
+  slug            String            @db.VarChar(80)
+  description     String?           @db.Text
+  status          TournamentStatus  @default(DRAFT)
+  registrationAt  DateTime?         @db.Timestamptz(6)
+  registrationEnd DateTime?         @db.Timestamptz(6)
+  startsAt        DateTime           @db.Timestamptz(6)
+  endsAt          DateTime           @db.Timestamptz(6)
+  timezone        String             @default("UTC") @db.VarChar(64)
+  published       Boolean            @default(false)
+  version         Int                @default(1)
+  createdAt       DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime           @updatedAt @db.Timestamptz(6)
+  archivedAt      DateTime?          @db.Timestamptz(6)
+  organization    Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  league          League?            @relation(fields: [leagueId], references: [id], onDelete: SetNull)
+  season          Season?            @relation(fields: [seasonId], references: [id], onDelete: SetNull)
+  divisions       Division[]
+  teams           TournamentTeam[]
+  rosters         Roster[]
+  games           Game[]
+  announcements   Announcement[]
+  favorites       FavoriteTournament[]
+  membershipRoles MembershipRole[]
+  invitations     Invitation[]
+  teamApplications TeamApplication[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId, published, status, startsAt])
+  @@index([archivedAt])
+}
+
+model Division {
+  id             String             @id @default(uuid()) @db.Uuid
+  organizationId String             @db.Uuid
+  tournamentId   String             @db.Uuid
+  name           String             @db.VarChar(120)
+  sortOrder      Int                @default(0)
+  published      Boolean            @default(false)
+  createdAt      DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime           @updatedAt @db.Timestamptz(6)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  tournament     Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  stages         CompetitionStage[]
+  games          Game[]
+
+  @@unique([tournamentId, name])
+  @@index([organizationId, published])
+}
+
+model CompetitionStage {
+  id             String             @id @default(uuid()) @db.Uuid
+  organizationId String             @db.Uuid
+  divisionId     String             @db.Uuid
+  name           String             @db.VarChar(120)
+  format         CompetitionFormat
+  sequence       Int
+  published      Boolean            @default(false)
+  createdAt      DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime           @updatedAt @db.Timestamptz(6)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  division       Division           @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  ruleSet        CompetitionRuleSet?
+  games          Game[]
+  standings      Standing[]
+  snapshots      StandingSnapshot[]
+  brackets       Bracket[]
+
+  @@unique([divisionId, sequence])
+  @@index([organizationId, published])
+}
+
+model CompetitionRuleSet {
+  id                   String             @id @default(uuid()) @db.Uuid
+  organizationId       String             @db.Uuid
+  stageId               String             @unique @db.Uuid
+  regulationPeriods    Int
+  periodDurationSeconds Int
+  overtimeDurationSeconds Int
+  allowDraws           Boolean            @default(false)
+  winPoints            Int                @default(2)
+  lossPoints           Int                @default(0)
+  drawPoints           Int                @default(1)
+  forfeitWinPoints     Int                @default(2)
+  forfeitScoreFor      Int                @default(20)
+  forfeitScoreAgainst  Int                @default(0)
+  tieBreakers          Json
+  advancementRules     Json               @default("{}")
+  version              Int                @default(1)
+  createdAt            DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @db.Timestamptz(6)
+  organization         Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  stage                CompetitionStage   @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model Venue {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  name           String       @db.VarChar(160)
+  addressLine1   String       @db.VarChar(180)
+  addressLine2   String?      @db.VarChar(180)
+  city           String       @db.VarChar(100)
+  region         String?      @db.VarChar(100)
+  postalCode     String?      @db.VarChar(32)
+  countryCode    String       @db.Char(2)
+  latitude       Decimal?     @db.Decimal(9, 6)
+  longitude      Decimal?     @db.Decimal(9, 6)
+  published      Boolean      @default(false)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  courts         Court[]
+  games          Game[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, published, archivedAt])
+}
+
+model Court {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  venueId        String       @db.Uuid
+  name           String       @db.VarChar(100)
+  published      Boolean      @default(false)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  venue          Venue        @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  games          Game[]
+
+  @@unique([venueId, name])
+  @@index([organizationId, published, archivedAt])
+}
+
+model Team {
+  id               String             @id @default(uuid()) @db.Uuid
+  organizationId   String             @db.Uuid
+  name             String             @db.VarChar(160)
+  shortName        String?            @db.VarChar(32)
+  description      String?            @db.Text
+  logoAssetId      String?            @unique @db.Uuid
+  published        Boolean            @default(false)
+  version          Int                @default(1)
+  createdAt        DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime           @updatedAt @db.Timestamptz(6)
+  archivedAt       DateTime?          @db.Timestamptz(6)
+  organization     Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  logoAsset        MediaAsset?        @relation("TeamLogo", fields: [logoAssetId], references: [id], onDelete: SetNull)
+  memberships      TeamMembership[]
+  players          Player[]
+  tournaments      TournamentTeam[]
+  rosters          Roster[]
+  homeGames        Game[]             @relation("HomeTeam")
+  awayGames        Game[]             @relation("AwayTeam")
+  scoreEvents      GameScoreEvent[]
+  standings        Standing[]
+  favorites        FavoriteTeam[]
+  membershipRoles  MembershipRole[]
+  teamApplications TeamApplication[]
+  invitations      Invitation[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, published, archivedAt])
+}
+
+model TournamentTeam {
+  tournamentId String     @db.Uuid
+  teamId       String     @db.Uuid
+  seed         Int?
+  approvedAt   DateTime?  @db.Timestamptz(6)
+  createdAt    DateTime   @default(now()) @db.Timestamptz(6)
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  team         Team       @relation(fields: [teamId], references: [id], onDelete: Restrict)
+
+  @@id([tournamentId, teamId])
+  @@index([teamId])
+}
+
+model TeamMembership {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  teamId         String           @db.Uuid
+  userId         String           @db.Uuid
+  role           TeamMemberRole
+  active         Boolean          @default(true)
+  startsAt       DateTime         @default(now()) @db.Timestamptz(6)
+  endsAt         DateTime?        @db.Timestamptz(6)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  team           Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([teamId, userId, role])
+  @@index([organizationId, userId, active])
+}
+
+model Player {
+  id               String         @id @default(uuid()) @db.Uuid
+  organizationId   String         @db.Uuid
+  teamId           String         @db.Uuid
+  givenName        String         @db.VarChar(80)
+  familyName       String         @db.VarChar(80)
+  dateOfBirth      DateTime?      @db.Date
+  position         PlayerPosition?
+  defaultJersey    Int?
+  publicVisibility Visibility     @default(PRIVATE)
+  version          Int            @default(1)
+  createdAt        DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime       @updatedAt @db.Timestamptz(6)
+  archivedAt       DateTime?      @db.Timestamptz(6)
+  organization     Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  team             Team           @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  rosters          RosterPlayer[]
+
+  @@index([organizationId, teamId, archivedAt])
+}
+
+model Roster {
+  id             String             @id @default(uuid()) @db.Uuid
+  organizationId String             @db.Uuid
+  teamId         String             @db.Uuid
+  tournamentId   String             @db.Uuid
+  seasonId       String?            @db.Uuid
+  status         RosterStatus       @default(DRAFT)
+  visibility     Visibility         @default(PRIVATE)
+  version        Int                @default(1)
+  createdAt      DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime           @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?          @db.Timestamptz(6)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  team           Team               @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  tournament     Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Restrict)
+  season         Season?            @relation(fields: [seasonId], references: [id], onDelete: SetNull)
+  players        RosterPlayer[]
+  submissions    RosterSubmission[]
+
+  @@unique([teamId, tournamentId])
+  @@index([organizationId, status, archivedAt])
+}
+
+model RosterPlayer {
+  id           String   @id @default(uuid()) @db.Uuid
+  rosterId     String   @db.Uuid
+  playerId     String   @db.Uuid
+  jerseyNumber Int
+  position     PlayerPosition?
+  captain      Boolean  @default(false)
+  addedAt      DateTime @default(now()) @db.Timestamptz(6)
+  roster       Roster   @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  player       Player   @relation(fields: [playerId], references: [id], onDelete: Restrict)
+
+  @@unique([rosterId, playerId])
+  @@unique([rosterId, jerseyNumber])
+}
+
+model RosterSubmission {
+  id             String             @id @default(uuid()) @db.Uuid
+  organizationId String             @db.Uuid
+  rosterId       String             @db.Uuid
+  submittedById  String             @db.Uuid
+  decidedById    String?            @db.Uuid
+  decision       SubmissionDecision @default(SUBMITTED)
+  message        String?            @db.Text
+  submittedAt    DateTime           @default(now()) @db.Timestamptz(6)
+  decidedAt      DateTime?          @db.Timestamptz(6)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  roster         Roster             @relation(fields: [rosterId], references: [id], onDelete: Restrict)
+  submittedBy    User               @relation("RosterSubmittedBy", fields: [submittedById], references: [id], onDelete: Restrict)
+  decidedBy      User?              @relation("RosterDecidedBy", fields: [decidedById], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, decision, submittedAt])
+}
+
+model Game {
+  id                String                @id @default(uuid()) @db.Uuid
+  organizationId    String                @db.Uuid
+  tournamentId      String                @db.Uuid
+  divisionId        String?               @db.Uuid
+  stageId           String?               @db.Uuid
+  venueId           String?               @db.Uuid
+  courtId           String?               @db.Uuid
+  homeTeamId        String?               @db.Uuid
+  awayTeamId        String?               @db.Uuid
+  scheduledAt       DateTime              @db.Timestamptz(6)
+  status            GameStatus            @default(DRAFT)
+  currentPeriod     Int                   @default(0)
+  regulationPeriods Int                  @default(4)
+  homeScore         Int                   @default(0)
+  awayScore         Int                   @default(0)
+  version           Int                   @default(0)
+  lastEventSequence Int                   @default(0)
+  published         Boolean               @default(false)
+  resultExplanation Json?                 
+  forfeitWinnerId   String?               @db.Uuid
+  startedAt         DateTime?             @db.Timestamptz(6)
+  finalizedAt       DateTime?             @db.Timestamptz(6)
+  createdAt         DateTime              @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime              @updatedAt @db.Timestamptz(6)
+  deletedAt         DateTime?             @db.Timestamptz(6)
+  organization      Organization          @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  tournament        Tournament            @relation(fields: [tournamentId], references: [id], onDelete: Restrict)
+  division          Division?              @relation(fields: [divisionId], references: [id], onDelete: SetNull)
+  stage             CompetitionStage?      @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  venue             Venue?                 @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  court             Court?                 @relation(fields: [courtId], references: [id], onDelete: SetNull)
+  homeTeam          Team?                  @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Restrict)
+  awayTeam          Team?                  @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Restrict)
+  assignments       GameAssignment[]
+  periods           GamePeriod[]
+  scoreEvents       GameScoreEvent[]
+  stateTransitions  GameStateTransition[]
+  membershipRoles   MembershipRole[]
+  sourceBracketLinks BracketMatchLink[]     @relation("SourceBracketGame")
+  targetBracketLinks BracketMatchLink[]     @relation("TargetBracketGame")
+  scoringLeases     ScoringLease[]
+  invitations       Invitation[]
+
+  @@index([organizationId, status, scheduledAt])
+  @@index([tournamentId, published, scheduledAt])
+  @@index([homeTeamId, scheduledAt])
+  @@index([awayTeamId, scheduledAt])
+  @@index([deletedAt])
+}
+
+model GameAssignment {
+  id             String             @id @default(uuid()) @db.Uuid
+  organizationId String             @db.Uuid
+  gameId         String             @db.Uuid
+  userId         String             @db.Uuid
+  type           GameAssignmentType
+  active         Boolean            @default(true)
+  assignedAt     DateTime           @default(now()) @db.Timestamptz(6)
+  expiresAt      DateTime?          @db.Timestamptz(6)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  game           Game               @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user           User               @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([gameId, userId, type])
+  @@index([organizationId, userId, active])
+}
+
+model GamePeriod {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  gameId         String       @db.Uuid
+  periodNumber   Int
+  isOvertime     Boolean      @default(false)
+  homeScore      Int          @default(0)
+  awayScore      Int          @default(0)
+  startedAt      DateTime?    @db.Timestamptz(6)
+  endedAt        DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  game           Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, periodNumber])
+  @@index([organizationId, gameId])
+}
+
+model GameScoreEvent {
+  id                   String          @id @default(uuid()) @db.Uuid
+  organizationId       String          @db.Uuid
+  gameId               String          @db.Uuid
+  actorUserId           String          @db.Uuid
+  scoringSessionId      String          @db.Uuid
+  idempotencyKey        String          @db.Uuid
+  sequence              Int
+  resultingGameVersion Int
+  period                Int
+  teamId                String?         @db.Uuid
+  type                  ScoreEventType
+  pointsDelta           Int             @default(0)
+  correctionOfEventId  String?          @unique @db.Uuid
+  correctionReason     String?          @db.VarChar(500)
+  note                  String?          @db.Text
+  occurredAt            DateTime        @db.Timestamptz(6)
+  createdAt             DateTime        @default(now()) @db.Timestamptz(6)
+  organization          Organization    @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  game                  Game            @relation(fields: [gameId], references: [id], onDelete: Restrict)
+  actor                 User            @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+  team                  Team?           @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  correctionOf          GameScoreEvent? @relation("ScoreCorrection", fields: [correctionOfEventId], references: [id], onDelete: Restrict)
+  correctedBy           GameScoreEvent? @relation("ScoreCorrection")
+
+  @@unique([gameId, idempotencyKey])
+  @@unique([gameId, sequence])
+  @@index([organizationId, gameId, createdAt])
+}
+
+model GameStateTransition {
+  id                   String              @id @default(uuid()) @db.Uuid
+  organizationId       String              @db.Uuid
+  gameId               String              @db.Uuid
+  actorUserId           String              @db.Uuid
+  idempotencyKey        String              @db.Uuid
+  type                  StateTransitionType
+  fromStatus            GameStatus
+  toStatus              GameStatus
+  period                Int?
+  reason                String?             @db.VarChar(500)
+  resultingGameVersion Int
+  occurredAt            DateTime            @db.Timestamptz(6)
+  createdAt             DateTime            @default(now()) @db.Timestamptz(6)
+  organization          Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  game                  Game                @relation(fields: [gameId], references: [id], onDelete: Restrict)
+  actor                 User                @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@unique([gameId, idempotencyKey])
+  @@index([organizationId, gameId, occurredAt])
+}
+
+model Standing {
+  id                    String            @id @default(uuid()) @db.Uuid
+  organizationId        String            @db.Uuid
+  stageId               String            @db.Uuid
+  teamId                String            @db.Uuid
+  played                Int               @default(0)
+  wins                  Int               @default(0)
+  losses                Int               @default(0)
+  draws                 Int               @default(0)
+  pointsFor             Int               @default(0)
+  pointsAgainst         Int               @default(0)
+  pointDifference       Int               @default(0)
+  standingPoints        Int               @default(0)
+  rank                  Int
+  tieBreakExplanation   Json
+  manualRankOverride    Int?
+  manualOverrideReason  String?           @db.VarChar(500)
+  manualOverrideById    String?           @db.Uuid
+  version               Int               @default(1)
+  calculatedAt          DateTime          @db.Timestamptz(6)
+  organization          Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  stage                 CompetitionStage  @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  team                  Team              @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  manualOverrideBy      User?             @relation("StandingOverrideBy", fields: [manualOverrideById], references: [id], onDelete: Restrict)
+
+  @@unique([stageId, teamId])
+  @@unique([stageId, rank])
+  @@index([organizationId, stageId, rank])
+}
+
+model StandingSnapshot {
+  id             String            @id @default(uuid()) @db.Uuid
+  organizationId String            @db.Uuid
+  stageId        String            @db.Uuid
+  sourceVersion  Int
+  rows           Json
+  explanation    Json
+  checksum       String            @db.VarChar(128)
+  createdAt      DateTime          @default(now()) @db.Timestamptz(6)
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  stage          CompetitionStage  @relation(fields: [stageId], references: [id], onDelete: Cascade)
+
+  @@unique([stageId, sourceVersion])
+  @@index([organizationId, createdAt])
+}
+
+model Bracket {
+  id             String            @id @default(uuid()) @db.Uuid
+  organizationId String            @db.Uuid
+  stageId        String            @db.Uuid
+  name           String            @db.VarChar(120)
+  published      Boolean           @default(false)
+  version        Int               @default(1)
+  createdAt      DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime          @updatedAt @db.Timestamptz(6)
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  stage          CompetitionStage  @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  rounds         BracketRound[]
+
+  @@unique([stageId, name])
+  @@index([organizationId, published])
+}
+
+model BracketRound {
+  id             String             @id @default(uuid()) @db.Uuid
+  organizationId String             @db.Uuid
+  bracketId      String             @db.Uuid
+  roundNumber    Int
+  name           String             @db.VarChar(100)
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  bracket        Bracket            @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  links          BracketMatchLink[]
+
+  @@unique([bracketId, roundNumber])
+  @@index([organizationId])
+}
+
+model BracketMatchLink {
+  id             String        @id @default(uuid()) @db.Uuid
+  organizationId String        @db.Uuid
+  roundId        String        @db.Uuid
+  sourceGameId   String        @db.Uuid
+  targetGameId   String?       @db.Uuid
+  targetSlot     String?       @db.VarChar(16)
+  sourceOutcome  String        @db.VarChar(16)
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  round          BracketRound  @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  sourceGame     Game          @relation("SourceBracketGame", fields: [sourceGameId], references: [id], onDelete: Restrict)
+  targetGame     Game?         @relation("TargetBracketGame", fields: [targetGameId], references: [id], onDelete: Restrict)
+
+  @@unique([sourceGameId, sourceOutcome])
+  @@index([organizationId, roundId])
+}
+
+model FavoriteTeam {
+  userId    String   @db.Uuid
+  teamId    String   @db.Uuid
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([userId, teamId])
+}
+
+model FavoriteTournament {
+  userId      String     @db.Uuid
+  tournamentId String    @db.Uuid
+  createdAt   DateTime   @default(now()) @db.Timestamptz(6)
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tournament  Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, tournamentId])
+}
+
+model NotificationPreference {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String?      @db.Uuid
+  scopeKey       String       @default("global") @db.VarChar(40)
+  userId         String       @db.Uuid
+  type           String       @db.VarChar(80)
+  emailEnabled   Boolean      @default(true)
+  pushEnabled    Boolean      @default(true)
+  inAppEnabled   Boolean      @default(true)
+  quietHours     Json?
+  timezone       String       @default("UTC") @db.VarChar(64)
+  consentedAt    DateTime?    @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, scopeKey, type])
+  @@index([organizationId, type])
+}
+
+model DeviceRegistration {
+  id             String         @id @default(uuid()) @db.Uuid
+  organizationId String?        @db.Uuid
+  userId         String         @db.Uuid
+  platform       DevicePlatform
+  provider       String         @db.VarChar(32)
+  tokenHash      String         @unique @db.VarChar(128)
+  encryptedToken String         @db.Text
+  deviceLabel    String?        @db.VarChar(100)
+  appVersion     String         @db.VarChar(32)
+  active         Boolean        @default(true)
+  lastSeenAt     DateTime       @default(now()) @db.Timestamptz(6)
+  invalidatedAt  DateTime?      @db.Timestamptz(6)
+  createdAt      DateTime       @default(now()) @db.Timestamptz(6)
+  organization   Organization?  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries     NotificationDelivery[]
+
+  @@index([userId, active])
+  @@index([organizationId, active])
+}
+
+model NotificationDelivery {
+  id                   String                     @id @default(uuid()) @db.Uuid
+  organizationId       String?                    @db.Uuid
+  userId               String                     @db.Uuid
+  deviceRegistrationId String?                    @db.Uuid
+  deduplicationKey     String                     @unique @db.VarChar(180)
+  notificationType     String                     @db.VarChar(80)
+  channel              NotificationChannel
+  status               NotificationDeliveryStatus @default(PENDING)
+  payload              Json
+  attemptCount         Int                        @default(0)
+  nextAttemptAt        DateTime?                  @db.Timestamptz(6)
+  sentAt               DateTime?                  @db.Timestamptz(6)
+  lastErrorCode        String?                    @db.VarChar(80)
+  createdAt            DateTime                   @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime                   @updatedAt @db.Timestamptz(6)
+  organization         Organization?              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user                 User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceRegistration   DeviceRegistration?        @relation(fields: [deviceRegistrationId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status, nextAttemptAt])
+  @@index([userId, createdAt])
+}
+
+model Announcement {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  tournamentId   String?      @db.Uuid
+  authorUserId   String       @db.Uuid
+  title          String       @db.VarChar(180)
+  body           String       @db.Text
+  published      Boolean      @default(false)
+  publishAt      DateTime?    @db.Timestamptz(6)
+  expiresAt      DateTime?    @db.Timestamptz(6)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  archivedAt     DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  tournament     Tournament?  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  author         User         @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, published, publishAt])
+  @@index([tournamentId, published])
+}
+
+model CorrectionRequest {
+  id                String        @id @default(uuid()) @db.Uuid
+  organizationId    String        @db.Uuid
+  requestedById     String        @db.Uuid
+  resolvedById      String?       @db.Uuid
+  resourceType      String        @db.VarChar(64)
+  resourceId        String        @db.Uuid
+  description       String        @db.Text
+  proposedChanges   Json?
+  status            RequestStatus @default(OPEN)
+  resolution        String?       @db.Text
+  createdAt         DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime      @updatedAt @db.Timestamptz(6)
+  resolvedAt        DateTime?     @db.Timestamptz(6)
+  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  requestedBy       User          @relation("CorrectionRequestedBy", fields: [requestedById], references: [id], onDelete: Restrict)
+  resolvedBy        User?         @relation("CorrectionResolvedBy", fields: [resolvedById], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, status, createdAt])
+  @@index([resourceType, resourceId])
+}
+
+model MediaAsset {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  createdById    String       @db.Uuid
+  objectKey      String       @unique @db.VarChar(512)
+  bucket         String       @db.VarChar(100)
+  contentType    String       @db.VarChar(100)
+  expectedBytes  Int
+  actualBytes    Int?
+  checksum       String?      @db.VarChar(128)
+  visibility     Visibility   @default(PRIVATE)
+  status         MediaStatus  @default(PENDING_UPLOAD)
+  uploadedAt     DateTime?    @db.Timestamptz(6)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  deletedAt      DateTime?    @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  createdBy      User         @relation("MediaCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  teamLogoFor    Team?        @relation("TeamLogo")
+
+  @@index([organizationId, status, createdAt])
+}
+
+model AuditLog {
+  id                 String        @id @default(uuid()) @db.Uuid
+  organizationId     String?       @db.Uuid
+  actorUserId        String?       @db.Uuid
+  impersonatedUserId String?       @db.Uuid
+  correlationId      String        @db.Uuid
+  action             String        @db.VarChar(120)
+  resourceType       String        @db.VarChar(64)
+  resourceId         String?       @db.Uuid
+  outcome            String        @db.VarChar(32)
+  changes            Json?
+  metadata           Json          @default("{}")
+  ipAddress          String?       @db.Inet
+  createdAt          DateTime      @default(now()) @db.Timestamptz(6)
+  organization       Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  actor              User?         @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  impersonatedUser   User?         @relation("AuditImpersonatedUser", fields: [impersonatedUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([resourceType, resourceId])
+  @@index([correlationId])
+}
+
+model OutboxEvent {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String?      @db.Uuid
+  aggregateType  String       @db.VarChar(80)
+  aggregateId    String       @db.Uuid
+  eventType      String       @db.VarChar(120)
+  payload        Json
+  status         OutboxStatus @default(PENDING)
+  attemptCount   Int          @default(0)
+  availableAt    DateTime     @default(now()) @db.Timestamptz(6)
+  lockedAt       DateTime?    @db.Timestamptz(6)
+  publishedAt    DateTime?    @db.Timestamptz(6)
+  lastError      String?      @db.VarChar(500)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([status, availableAt])
+  @@index([organizationId, aggregateType, aggregateId])
+}
+
+model BackgroundJobRecord {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String?      @db.Uuid
+  queueName      String       @db.VarChar(80)
+  jobKey         String       @unique @db.VarChar(180)
+  jobType        String       @db.VarChar(120)
+  status         JobStatus    @default(QUEUED)
+  payload        Json
+  result         Json?
+  attemptCount   Int          @default(0)
+  lastError      String?      @db.VarChar(1000)
+  startedAt      DateTime?    @db.Timestamptz(6)
+  completedAt    DateTime?    @db.Timestamptz(6)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime     @updatedAt @db.Timestamptz(6)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([queueName, status, createdAt])
+  @@index([organizationId, status])
+}
+
+model Invitation {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  tournamentId   String?          @db.Uuid
+  teamId         String?          @db.Uuid
+  gameId         String?          @db.Uuid
+  sentById       String           @db.Uuid
+  email          String           @db.VarChar(320)
+  roleKey        String           @db.VarChar(80)
+  tokenHash      String           @unique @db.VarChar(128)
+  expiresAt      DateTime         @db.Timestamptz(6)
+  acceptedAt     DateTime?        @db.Timestamptz(6)
+  revokedAt      DateTime?        @db.Timestamptz(6)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tournament     Tournament?      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  team           Team?            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  game           Game?            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  sentBy         User             @relation("InvitationSentBy", fields: [sentById], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, email, expiresAt])
+}
+
+model DataRequest {
+  id             String          @id @default(uuid()) @db.Uuid
+  organizationId String?         @db.Uuid
+  userId         String          @db.Uuid
+  type           DataRequestType
+  status         RequestStatus   @default(OPEN)
+  requestedAt    DateTime        @default(now()) @db.Timestamptz(6)
+  completedAt    DateTime?       @db.Timestamptz(6)
+  expiresAt      DateTime?       @db.Timestamptz(6)
+  resultAssetId  String?         @db.Uuid
+  resultObjectKey String?        @db.VarChar(512)
+  resultChecksum String?         @db.VarChar(128)
+  organization   Organization?   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([userId, status, requestedAt])
+  @@index([organizationId, type, status])
+}
+
+model ScoringLease {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @db.Uuid
+  gameId         String       @db.Uuid
+  userId         String       @db.Uuid
+  sessionId      String       @unique @db.Uuid
+  leaseTokenHash String       @db.VarChar(128)
+  expiresAt      DateTime     @db.Timestamptz(6)
+  lastHeartbeatAt DateTime    @default(now()) @db.Timestamptz(6)
+  revokedAt      DateTime?    @db.Timestamptz(6)
+  createdAt      DateTime     @default(now()) @db.Timestamptz(6)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  game           Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([gameId, expiresAt, revokedAt])
+  @@index([organizationId, userId])
+}
+
+model TeamApplication {
+  id             String        @id @default(uuid()) @db.Uuid
+  organizationId String        @db.Uuid
+  tournamentId   String        @db.Uuid
+  teamId         String        @db.Uuid
+  submittedById  String        @db.Uuid
+  decidedById    String?       @db.Uuid
+  status         RequestStatus @default(OPEN)
+  message        String?       @db.Text
+  decisionReason String?       @db.Text
+  submittedAt    DateTime      @default(now()) @db.Timestamptz(6)
+  decidedAt      DateTime?     @db.Timestamptz(6)
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  tournament     Tournament    @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  team           Team          @relation(fields: [teamId], references: [id], onDelete: Restrict)
+  submittedBy    User          @relation("TeamApplicationSubmittedBy", fields: [submittedById], references: [id], onDelete: Restrict)
+  decidedBy      User?         @relation("TeamApplicationDecidedBy", fields: [decidedById], references: [id], onDelete: Restrict)
+
+  @@unique([tournamentId, teamId])
+  @@index([organizationId, status, submittedAt])
+}
