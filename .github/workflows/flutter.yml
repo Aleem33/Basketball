@@ -1,6 +1,7 @@
 name: Flutter Android
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths: ['apps/mobile/**', '.github/workflows/flutter.yml']
@@ -32,8 +33,18 @@ jobs:
       - run: flutter test --coverage
       - name: Build unsigned release application bundle
         run: flutter build appbundle --release --dart-define=API_URL=https://api.example.invalid/api/v1 --dart-define=WEBSOCKET_URL=https://api.example.invalid/live --dart-define=APP_NAME="Tournament Platform"
-      - uses: actions/upload-artifact@v4
+      - name: Upload unsigned release application bundle
+        uses: actions/upload-artifact@v4
         with:
           name: android-unsigned-release
           path: apps/mobile/build/app/outputs/bundle/release/*.aab
+          retention-days: 14
+      - name: Build local Android emulator APK
+        run: flutter build apk --debug --dart-define=API_URL=http://10.0.2.2:8080/api/v1 --dart-define=WEBSOCKET_URL=http://10.0.2.2:8080/live --dart-define=APP_NAME="Tournament Platform"
+      - name: Upload local Android emulator APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-emulator-debug-apk
+          path: apps/mobile/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
           retention-days: 14
