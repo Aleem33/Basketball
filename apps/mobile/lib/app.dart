@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/app_config.dart';
 import 'providers/providers.dart';
 import 'router/app_router.dart';
+import 'theme/courtside_theme.dart';
 
 class TournamentApp extends ConsumerWidget {
   const TournamentApp({super.key});
@@ -12,21 +13,9 @@ class TournamentApp extends ConsumerWidget {
     return MaterialApp.router(
       title: config.appName,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: config.primaryColor),
-        useMaterial3: true,
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-        ),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: config.primaryColor,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
-      themeMode: ThemeMode.system,
+      theme: CourtsideTheme.dark(config.primaryColor),
+      darkTheme: CourtsideTheme.dark(config.primaryColor),
+      themeMode: ThemeMode.dark,
       routerConfig: appRouter,
     );
   }

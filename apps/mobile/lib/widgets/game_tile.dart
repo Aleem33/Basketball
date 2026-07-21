@@ -1,114 +1,143 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+
 import '../models/domain.dart';
+import '../theme/courtside_theme.dart';
+import 'sports_ui.dart';
 
 class GameTile extends StatelessWidget {
-  const GameTile(this.game, {super.key});
+  const GameTile(this.game, {this.featured = false, super.key});
   final GameSummary game;
+  final bool featured;
+
+  bool get showScore => <GameStatus>{
+    GameStatus.live,
+    GameStatus.paused,
+    GameStatus.finalScore,
+    GameStatus.forfeited,
+    GameStatus.abandoned,
+  }.contains(game.status);
+
   @override
   Widget build(BuildContext context) => Card(
+    color:
+        game.status == GameStatus.live
+            ? CourtsideColors.live.withValues(alpha: .075)
+            : null,
     child: InkWell(
-      onTap: () async {
-        await context.push('/games/${game.id}');
-      },
-      borderRadius: BorderRadius.circular(12),
+      onTap: () => context.push('/games/${game.id}'),
+      borderRadius: BorderRadius.circular(20),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(featured ? 20 : 16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Row(
               children: <Widget>[
-                _StatusPill(game.status),
+                GameStatusBadge(game.status),
                 const Spacer(),
+                Icon(
+                  Icons.schedule,
+                  size: 15,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 5),
                 Text(
                   DateFormat.MMMd().add_jm().format(game.scheduledAt.toLocal()),
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            _TeamScore(
-              name: game.homeTeam?.name ?? 'To be decided',
-              score: game.homeScore,
-              showScore: _showScore(game.status),
+            SizedBox(height: featured ? 22 : 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: _Team(
+                    team: game.homeTeam,
+                    score: game.homeScore,
+                    showScore: showScore,
+                    featured: featured,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    showScore ? '–' : 'VS',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: CourtsideColors.muted,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: _Team(
+                    team: game.awayTeam,
+                    score: game.awayScore,
+                    showScore: showScore,
+                    featured: featured,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            _TeamScore(
-              name: game.awayTeam?.name ?? 'To be decided',
-              score: game.awayScore,
-              showScore: _showScore(game.status),
-            ),
+            if (game.status == GameStatus.live &&
+                game.currentPeriod > 0) ...<Widget>[
+              const SizedBox(height: 14),
+              Text(
+                'PERIOD ${game.currentPeriod}',
+                style: const TextStyle(
+                  color: CourtsideColors.live,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: .8,
+                ),
+              ),
+            ],
           ],
         ),
       ),
     ),
   );
-
-  bool _showScore(GameStatus status) => <GameStatus>[
-    GameStatus.live,
-    GameStatus.paused,
-    GameStatus.finalScore,
-    GameStatus.forfeited,
-    GameStatus.abandoned,
-  ].contains(status);
 }
 
-class _TeamScore extends StatelessWidget {
-  const _TeamScore({
-    required this.name,
+class _Team extends StatelessWidget {
+  const _Team({
+    required this.team,
     required this.score,
     required this.showScore,
+    required this.featured,
   });
-  final String name;
+  final TeamSummary? team;
   final int score;
   final bool showScore;
+  final bool featured;
+
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) => Column(
     children: <Widget>[
-      Expanded(
-        child: Text(name, style: Theme.of(context).textTheme.titleMedium),
+      TeamCrest(team: team, size: featured ? 58 : 46),
+      const SizedBox(height: 9),
+      Text(
+        team?.shortName ?? team?.name ?? 'TBD',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.titleMedium,
       ),
       if (showScore)
-        Text('$score', style: Theme.of(context).textTheme.headlineSmall),
-    ],
-  );
-}
-
-class _StatusPill extends StatelessWidget {
-  const _StatusPill(this.status);
-  final GameStatus status;
-  @override
-  Widget build(BuildContext context) {
-    final (String, Color) presentation = switch (status) {
-      GameStatus.live => ('LIVE', Colors.red.shade700),
-      GameStatus.paused => ('PAUSED', Colors.orange.shade800),
-      GameStatus.finalScore => ('FINAL', Colors.blueGrey),
-      GameStatus.postponed => ('POSTPONED', Colors.orange.shade800),
-      GameStatus.cancelled => ('CANCELLED', Colors.red.shade800),
-      GameStatus.abandoned => ('ABANDONED', Colors.red.shade800),
-      GameStatus.forfeited => ('FORFEIT', Colors.deepPurple),
-      GameStatus.draft => ('DRAFT', Colors.blueGrey),
-      GameStatus.scheduled => ('UPCOMING', Colors.green.shade800),
-    };
-    return Semantics(
-      label: 'Game status ${presentation.$1}',
-      child: Container(
-        decoration: BoxDecoration(
-          color: presentation.$2.withValues(alpha: .12),
-          borderRadius: BorderRadius.circular(99),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-        child: Text(
-          presentation.$1,
-          style: TextStyle(
-            color: presentation.$2,
-            fontWeight: FontWeight.w700,
-            fontSize: 12,
+        AnimatedSwitcher(
+          duration:
+              MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 240),
+          child: Text(
+            '$score',
+            key: ValueKey<int>(score),
+            style: (featured
+                    ? Theme.of(context).textTheme.displaySmall
+                    : Theme.of(context).textTheme.headlineMedium)
+                ?.copyWith(fontWeight: FontWeight.w900),
           ),
         ),
-      ),
-    );
-  }
+    ],
+  );
 }

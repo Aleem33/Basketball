@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../providers/providers.dart';
 import '../repositories/auth_repository.dart';
 import '../repositories/favorites_repository.dart';
+import '../theme/courtside_theme.dart';
+import '../widgets/sports_ui.dart';
 import '../widgets/states.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -38,6 +40,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: <Widget>[
+            Center(
+              child: Container(
+                width: 74,
+                height: 74,
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: .12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.sports_basketball_rounded,
+                  size: 38,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(
               'Personalize your experience',
               style: Theme.of(context).textTheme.headlineSmall,
@@ -338,11 +358,23 @@ class FavoritesScreen extends ConsumerWidget {
             );
           }
           return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 112),
             children: <Widget>[
               if (data.isOffline) const OfflineBanner(),
-              ListTile(title: Text('${data.teamIds.length} followed teams')),
-              ListTile(
-                title: Text('${data.tournamentIds.length} saved tournaments'),
+              const SectionHeader('Your collection'),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.groups_2_outlined),
+                  title: Text('${data.teamIds.length} followed teams'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                ),
+              ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.emoji_events_outlined),
+                  title: Text('${data.tournamentIds.length} saved tournaments'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                ),
               ),
             ],
           );
@@ -361,11 +393,21 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 112),
         children: <Widget>[
-          ListTile(
-            title: Text(config.appName),
-            subtitle: Text('Version ${config.appVersion}'),
+          Card(
+            color: CourtsideColors.surfaceHigh,
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: CourtsideColors.background,
+                child: const Icon(Icons.sports_basketball_rounded),
+              ),
+              title: Text(config.appName),
+              subtitle: Text('Version ${config.appVersion}'),
+            ),
           ),
+          const SectionHeader('Preferences & support'),
           if (config.privacyPolicyUrl != null)
             ListTile(
               leading: const Icon(Icons.privacy_tip_outlined),

@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../models/domain.dart';
 import '../providers/providers.dart';
 import '../widgets/favorite_toggle.dart';
+import '../widgets/sports_ui.dart';
 import '../widgets/states.dart';
 
 class TournamentDetailScreen extends ConsumerWidget {
@@ -277,10 +278,14 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
         homeTeam: TeamSummary(
           id: home['id']! as String,
           name: home['name']! as String,
+          shortName: home['shortName'] as String?,
+          logoUrl: home['logoUrl'] as String?,
         ),
         awayTeam: TeamSummary(
           id: away['id']! as String,
           name: away['name']! as String,
+          shortName: away['shortName'] as String?,
+          logoUrl: away['logoUrl'] as String?,
         ),
         homeScore: data['homeScore']! as int,
         awayScore: data['awayScore']! as int,
@@ -318,81 +323,85 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             ),
           ],
         ),
-        body: RefreshIndicator(
-          onRefresh: () async {
-            final Future<Map<String, Object?>> refresh = ref
-                .read(publicRepositoryProvider)
-                .game(widget.id);
-            setState(() => _future = refresh);
-            await refresh;
-          },
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: <Widget>[
-              Center(
-                child: Text(
-                  game.status.name.toUpperCase(),
-                  style: Theme.of(context).textTheme.labelLarge,
+        body: SportsBackdrop(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              final Future<Map<String, Object?>> refresh = ref
+                  .read(publicRepositoryProvider)
+                  .game(widget.id);
+              setState(() => _future = refresh);
+              await refresh;
+            },
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: <Widget>[
+                const SizedBox(height: 4),
+                Center(child: GameStatusBadge(game.status)),
+                const SizedBox(height: 12),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: _ScoreTeam(
+                        team: game.homeTeam,
+                        score: game.homeScore,
+                      ),
+                    ),
+                    Text(
+                      '–',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    Expanded(
+                      child: _ScoreTeam(
+                        team: game.awayTeam,
+                        score: game.awayScore,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: _ScoreTeam(
-                      name: game.homeTeam?.name ?? 'TBD',
-                      score: game.homeScore,
+                const SizedBox(height: 12),
+                Center(
+                  child: Text(
+                    DateFormat.yMMMd().add_jm().format(
+                      game.scheduledAt.toLocal(),
                     ),
                   ),
-                  Text('–', style: Theme.of(context).textTheme.headlineMedium),
-                  Expanded(
-                    child: _ScoreTeam(
-                      name: game.awayTeam?.name ?? 'TBD',
-                      score: game.awayScore,
+                ),
+                if (live.isLoading)
+                  const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Center(child: Text('Connecting to live updates…')),
+                  ),
+                const Divider(height: 32),
+                const SectionHeader('Period scores'),
+                if (periods.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text('No period scores have been recorded.'),
+                  ),
+                ...periods.map((Object? raw) {
+                  final Map<String, Object?> row =
+                      (raw! as Map<Object?, Object?>).cast<String, Object?>();
+                  return Card(
+                    child: ListTile(
+                      title: Text('Period ${row['periodNumber']}'),
+                      trailing: Text(
+                        '${row['homeScore']} – ${row['awayScore']}',
+                      ),
+                    ),
+                  );
+                }),
+                if (venue != null)
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.location_on_outlined),
+                      title: Text(venue['name']! as String),
+                      subtitle: Text(
+                        court?['name'] as String? ?? 'Court not specified',
+                      ),
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Center(
-                child: Text(
-                  DateFormat.yMMMd().add_jm().format(
-                    game.scheduledAt.toLocal(),
-                  ),
-                ),
-              ),
-              if (live.isLoading)
-                const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Center(child: Text('Connecting to live updates…')),
-                ),
-              const Divider(height: 32),
-              Text(
-                'Period scores',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              if (periods.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text('No period scores have been recorded.'),
-                ),
-              ...periods.map((Object? raw) {
-                final Map<String, Object?> row =
-                    (raw! as Map<Object?, Object?>).cast<String, Object?>();
-                return ListTile(
-                  title: Text('Period ${row['periodNumber']}'),
-                  trailing: Text('${row['homeScore']} – ${row['awayScore']}'),
-                );
-              }),
-              if (venue != null)
-                ListTile(
-                  leading: const Icon(Icons.location_on_outlined),
-                  title: Text(venue['name']! as String),
-                  subtitle: Text(
-                    court?['name'] as String? ?? 'Court not specified',
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       );
@@ -401,20 +410,34 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
 }
 
 class _ScoreTeam extends StatelessWidget {
-  const _ScoreTeam({required this.name, required this.score});
+  const _ScoreTeam({required this.team, required this.score});
 
-  final String name;
+  final TeamSummary? team;
   final int score;
 
   @override
   Widget build(BuildContext context) => Column(
     children: <Widget>[
+      TeamCrest(team: team, size: 64),
+      const SizedBox(height: 10),
       Text(
-        name,
+        team?.shortName ?? team?.name ?? 'TBD',
         textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.titleMedium,
       ),
-      Text('$score', style: Theme.of(context).textTheme.displaySmall),
+      AnimatedSwitcher(
+        duration:
+            MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : const Duration(milliseconds: 240),
+        child: Text(
+          '$score',
+          key: ValueKey<int>(score),
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
+      ),
     ],
   );
 }
@@ -569,20 +592,22 @@ class _MapFutureScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: Text(title)),
-    body: FutureBuilder<Map<String, Object?>>(
-      future: future,
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<Map<String, Object?>> snapshot,
-      ) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return FailureState(error: snapshot.error!, onRetry: () {});
-        }
-        return builder(snapshot.data!);
-      },
+    body: SportsBackdrop(
+      child: FutureBuilder<Map<String, Object?>>(
+        future: future,
+        builder: (
+          BuildContext context,
+          AsyncSnapshot<Map<String, Object?>> snapshot,
+        ) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return FailureState(error: snapshot.error!, onRetry: () {});
+          }
+          return builder(snapshot.data!);
+        },
+      ),
     ),
   );
 }
