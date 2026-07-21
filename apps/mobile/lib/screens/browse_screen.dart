@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../models/domain.dart';
 import '../providers/providers.dart';
 import '../repositories/public_repository.dart';
-import '../theme/courtside_theme.dart';
 import '../widgets/game_tile.dart';
 import '../widgets/sports_ui.dart';
 import '../widgets/states.dart';
