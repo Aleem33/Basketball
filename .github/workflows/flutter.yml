@@ -34,7 +34,7 @@ jobs:
       - name: Build unsigned release application bundle
         run: flutter build appbundle --release --dart-define=API_URL=https://api.example.invalid/api/v1 --dart-define=WEBSOCKET_URL=https://api.example.invalid/live --dart-define=APP_NAME="Tournament Platform"
       - name: Upload unsigned release application bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-unsigned-release
           path: apps/mobile/build/app/outputs/bundle/release/*.aab
@@ -42,7 +42,7 @@ jobs:
       - name: Build local Android emulator APK
         run: flutter build apk --debug --dart-define=API_URL=http://10.0.2.2:8080/api/v1 --dart-define=WEBSOCKET_URL=http://10.0.2.2:8080/live --dart-define=APP_NAME="Tournament Platform"
       - name: Upload local Android emulator APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-emulator-debug-apk
           path: apps/mobile/build/app/outputs/flutter-apk/app-debug.apk
