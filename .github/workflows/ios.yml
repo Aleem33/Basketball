@@ -32,7 +32,7 @@ jobs:
       - run: cd ios && pod install --repo-update
       - name: Build without signing
         run: flutter build ios --release --no-codesign --dart-define=API_URL=https://api.example.invalid/api/v1 --dart-define=WEBSOCKET_URL=https://api.example.invalid/live --dart-define=APP_NAME="Tournament Platform"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ios-unsigned-app
           path: apps/mobile/build/ios/iphoneos/Runner.app
