@@ -90,13 +90,20 @@ class BrowseScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  sliver: SliverList.builder(
-                    itemCount: featured.length,
-                    itemBuilder:
-                        (_, int index) =>
-                            GameTile(featured[index], featured: index == 0),
+                return SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 286,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: featured.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      itemBuilder:
+                          (_, int index) => SizedBox(
+                            width: MediaQuery.sizeOf(context).width * .86,
+                            child: GameTile(featured[index], featured: true),
+                          ),
+                    ),
                   ),
                 );
               },

@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../models/domain.dart';
 import '../providers/providers.dart';
+import '../theme/courtside_theme.dart';
 import '../widgets/favorite_toggle.dart';
 import '../widgets/sports_ui.dart';
 import '../widgets/states.dart';
@@ -335,37 +336,121 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: <Widget>[
-                const SizedBox(height: 4),
-                Center(child: GameStatusBadge(game.status)),
-                const SizedBox(height: 12),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: _ScoreTeam(
-                        team: game.homeTeam,
-                        score: game.homeScore,
-                      ),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[
+                        CourtsideColors.surfaceHigh,
+                        (game.status == GameStatus.live
+                                ? CourtsideColors.live
+                                : CourtsideColors.orange)
+                            .withValues(alpha: .22),
+                      ],
                     ),
-                    Text(
-                      '–',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    Expanded(
-                      child: _ScoreTeam(
-                        team: game.awayTeam,
-                        score: game.awayScore,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Center(
-                  child: Text(
-                    DateFormat.yMMMd().add_jm().format(
-                      game.scheduledAt.toLocal(),
+                    border: Border.all(
+                      color: (game.status == GameStatus.live
+                              ? CourtsideColors.live
+                              : CourtsideColors.orange)
+                          .withValues(alpha: .42),
                     ),
                   ),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            'MATCH CENTER',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelSmall?.copyWith(
+                              color: CourtsideColors.muted,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                          const Spacer(),
+                          GameStatusBadge(game.status),
+                        ],
+                      ),
+                      const SizedBox(height: 22),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: _ScoreTeam(
+                              team: game.homeTeam,
+                              score: game.homeScore,
+                            ),
+                          ),
+                          Text(
+                            '–',
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(color: CourtsideColors.muted),
+                          ),
+                          Expanded(
+                            child: _ScoreTeam(
+                              team: game.awayTeam,
+                              score: game.awayScore,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      Divider(
+                        color: CourtsideColors.outline.withValues(alpha: .75),
+                        height: 1,
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: <Widget>[
+                          const Icon(
+                            Icons.schedule_rounded,
+                            size: 17,
+                            color: CourtsideColors.muted,
+                          ),
+                          const SizedBox(width: 7),
+                          Expanded(
+                            child: Text(
+                              DateFormat.yMMMd().add_jm().format(
+                                game.scheduledAt.toLocal(),
+                              ),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ),
+                          if (game.currentPeriod > 0)
+                            Text(
+                              'PERIOD ${game.currentPeriod}',
+                              style: TextStyle(
+                                color:
+                                    game.status == GameStatus.live
+                                        ? CourtsideColors.live
+                                        : CourtsideColors.muted,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: .6,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+                if (venue != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.location_on_outlined),
+                        title: Text(venue['name']! as String),
+                        subtitle: Text(
+                          court?['name'] as String? ?? 'Court not specified',
+                        ),
+                      ),
+                    ),
+                  ),
                 if (live.isLoading)
                   const Padding(
                     padding: EdgeInsets.all(8),
@@ -390,16 +475,6 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
                     ),
                   );
                 }),
-                if (venue != null)
-                  Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.location_on_outlined),
-                      title: Text(venue['name']! as String),
-                      subtitle: Text(
-                        court?['name'] as String? ?? 'Court not specified',
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),
