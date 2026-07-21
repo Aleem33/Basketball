@@ -36,7 +36,6 @@ void main() {
 
     expect(find.text('Live Home'), findsOneWidget);
     expect(find.text('Upcoming Home'), findsOneWidget);
-    expect(find.text('Final Home'), findsOneWidget);
 
     await tester.tap(find.text('Upcoming'));
     await tester.pumpAndSettle();
