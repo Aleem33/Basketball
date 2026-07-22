@@ -30,8 +30,8 @@ The API coverage gate intentionally measures deterministic competition/scoring r
 | PostgreSQL integration suite | No PostgreSQL/Docker. `backend.yml` starts PostgreSQL/Redis, migrates, then runs tenant isolation, refresh rotation, scoring idempotency/concurrency/rollback, media, management workflow, and job redelivery tests. |
 | Redis interruption/runtime   | No Redis server. Correctness remains database-backed; CI supplies Redis and readiness/queue paths.                                                                                                                   |
 | Playwright E2E               | Chromium is not installed locally. `admin-web.yml` installs Chromium and runs tournament creation plus team-application approval workflows.                                                                          |
-| Flutter analyze/test/build   | Flutter/Dart unavailable. `flutter.yml` pins Flutter 3.29.3, formats/analyzes/tests and builds an unsigned AAB; `ios.yml` tests and creates an unsigned iOS app on macOS.                                            |
-| Docker Compose/images        | Docker unavailable. Dockerfiles, Compose health checks, migration startup, non-root runtimes, Nginx, and Trivy CI are checked in.                                                                                    |
+| Flutter analyze/test/build   | Flutter/Dart unavailable. The unified `flutter.yml` pins Flutter 3.29.3, formats/analyzes/tests, builds Android artifacts, and creates an unsigned iOS app on macOS 15.                                              |
+| Docker Compose/emulator E2E  | Docker and Android emulator unavailable. After both mobile builds pass, `flutter.yml` starts the complete Compose stack, checks API/admin readiness, and runs the fan app against it on an API 35 emulator.          |
 | Backup/restore drill         | Requires Docker/PostgreSQL and an approved isolated target; scripts were reviewed but not destructively exercised.                                                                                                   |
 
 ## Failed or degraded local commands

@@ -34,6 +34,11 @@ class TournamentDetailScreen extends ConsumerWidget {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: <Widget>[
+            const SportsPageHeader(
+              eyebrow: 'Tournament hub',
+              title: 'Competition overview',
+              subtitle: 'Stages, standings, brackets, and official updates.',
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -165,6 +170,11 @@ class TeamDetailScreen extends ConsumerWidget {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: <Widget>[
+            const SportsPageHeader(
+              eyebrow: 'Team center',
+              title: 'Roster & profile',
+              subtitle: 'Meet the squad and follow their tournament journey.',
+            ),
             Row(
               children: <Widget>[
                 Expanded(
@@ -254,12 +264,18 @@ class _GameDetailScreenState extends ConsumerState<GameDetailScreen> {
       AsyncSnapshot<Map<String, Object?>> snapshot,
     ) {
       if (snapshot.connectionState != ConnectionState.done) {
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        return const Scaffold(
+          body: SportsBackdrop(
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        );
       }
       if (snapshot.hasError) {
         return Scaffold(
           appBar: AppBar(),
-          body: FailureState(error: snapshot.error!, onRetry: _retry),
+          body: SportsBackdrop(
+            child: FailureState(error: snapshot.error!, onRetry: _retry),
+          ),
         );
       }
 
@@ -510,7 +526,7 @@ class _ScoreTeam extends StatelessWidget {
         child: Text(
           '$score',
           key: ValueKey<int>(score),
-          style: Theme.of(context).textTheme.displaySmall,
+          style: CourtsideTheme.scoreStyle(context, fontSize: 44),
         ),
       ),
     ],
@@ -543,8 +559,17 @@ class StandingsScreen extends ConsumerWidget {
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(12),
-          scrollDirection: Axis.horizontal,
-          child: DataTable(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SportsPageHeader(
+                eyebrow: 'League table',
+                title: 'Standings',
+                subtitle: 'Official rankings from finalized results.',
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
             columns: const <DataColumn>[
               DataColumn(label: Text('#')),
               DataColumn(label: Text('Team')),
@@ -575,6 +600,9 @@ class StandingsScreen extends ConsumerWidget {
                     ],
                   );
                 }).toList(),
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -598,10 +626,19 @@ class BracketScreen extends ConsumerWidget {
       future: bracket,
       builder: (Map<String, Object?> data) {
         final List<Object?> rounds = data['rounds']! as List<Object?>;
-        return ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.all(12),
-          children:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SportsPageHeader(
+              eyebrow: 'Knockout path',
+              title: 'Bracket',
+              subtitle: 'Follow every round on the road to the title.',
+            ),
+            Expanded(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.all(12),
+                children:
               rounds.map((Object? raw) {
                 final Map<String, Object?> round =
                     (raw! as Map<Object?, Object?>).cast<String, Object?>();
@@ -647,6 +684,9 @@ class BracketScreen extends ConsumerWidget {
                   ),
                 );
               }).toList(),
+              ),
+            ),
+          ],
         );
       },
     );

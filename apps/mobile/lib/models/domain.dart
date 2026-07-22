@@ -55,6 +55,38 @@ class TournamentSummary {
 }
 
 @immutable
+class AnnouncementSummary {
+  const AnnouncementSummary({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.createdAt,
+    this.tournamentId,
+    this.publishAt,
+  });
+
+  factory AnnouncementSummary.fromJson(Map<String, Object?> json) =>
+      AnnouncementSummary(
+        id: json['id']! as String,
+        tournamentId: json['tournamentId'] as String?,
+        title: json['title']! as String,
+        body: json['body']! as String,
+        publishAt:
+            json['publishAt'] == null
+                ? null
+                : DateTime.parse(json['publishAt']! as String),
+        createdAt: DateTime.parse(json['createdAt']! as String),
+      );
+
+  final String id;
+  final String? tournamentId;
+  final String title;
+  final String body;
+  final DateTime? publishAt;
+  final DateTime createdAt;
+}
+
+@immutable
 class TeamSummary {
   const TeamSummary({
     required this.id,

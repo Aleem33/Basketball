@@ -61,6 +61,10 @@ final FutureProvider<CachedResult<List<GameSummary>>> gamesProvider =
     FutureProvider<CachedResult<List<GameSummary>>>(
       (Ref ref) => ref.watch(publicRepositoryProvider).games(),
     );
+final FutureProvider<List<AnnouncementSummary>> announcementsProvider =
+    FutureProvider<List<AnnouncementSummary>>(
+      (Ref ref) => ref.watch(publicRepositoryProvider).announcements(),
+    );
 
 class AuthController extends StateNotifier<AsyncValue<AuthUser?>> {
   AuthController(this._repository)

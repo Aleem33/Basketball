@@ -107,17 +107,19 @@ class _AppShell extends StatelessWidget {
     extendBody: true,
     body: shell,
     bottomNavigationBar: SafeArea(
-      minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+      minimum: const EdgeInsets.fromLTRB(12, 0, 12, 10),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: CourtsideColors.surfaceHigh,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: CourtsideColors.outline),
-          boxShadow: const <BoxShadow>[
+          gradient: const LinearGradient(
+            colors: <Color>[Color(0xF5202B3B), Color(0xF5111722)],
+          ),
+          borderRadius: BorderRadius.circular(26),
+          border: Border.all(color: CourtsideColors.outline.withValues(alpha: .9)),
+          boxShadow: <BoxShadow>[
             BoxShadow(
-              color: Colors.black54,
-              blurRadius: 24,
-              offset: Offset(0, 10),
+              color: Colors.black.withValues(alpha: .48),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
             ),
           ],
         ),
@@ -132,14 +134,14 @@ class _AppShell extends StatelessWidget {
                 ),
             destinations: const <NavigationDestination>[
               NavigationDestination(
-                icon: Icon(Icons.explore_outlined),
-                selectedIcon: Icon(Icons.explore),
-                label: 'Browse',
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home_rounded),
+                label: 'Home',
               ),
               NavigationDestination(
-                icon: Icon(Icons.calendar_month_outlined),
-                selectedIcon: Icon(Icons.calendar_month),
-                label: 'Games',
+                icon: Icon(Icons.sports_basketball_outlined),
+                selectedIcon: Icon(Icons.sports_basketball_rounded),
+                label: 'Scores',
               ),
               NavigationDestination(
                 icon: Icon(Icons.star_border),

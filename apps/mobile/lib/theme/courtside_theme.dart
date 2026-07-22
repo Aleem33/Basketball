@@ -1,4 +1,20 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show FontFeature;
+
+abstract final class CourtsideSpacing {
+  static const double xs = 6;
+  static const double sm = 10;
+  static const double md = 16;
+  static const double lg = 24;
+  static const double xl = 32;
+}
+
+abstract final class CourtsideRadii {
+  static const double small = 12;
+  static const double medium = 18;
+  static const double large = 24;
+  static const double pill = 999;
+}
 
 abstract final class CourtsideColors {
   static const Color background = Color(0xFF090D14);
@@ -12,6 +28,8 @@ abstract final class CourtsideColors {
   static const Color live = Color(0xFFFF445E);
   static const Color success = Color(0xFF42D392);
   static const Color warning = Color(0xFFFFB84D);
+  static const Color info = Color(0xFF55B8FF);
+  static const Color overlay = Color(0xE6111722);
 }
 
 abstract final class CourtsideTheme {
@@ -87,6 +105,11 @@ abstract final class CourtsideTheme {
         ),
         bodyMedium: text.bodyMedium?.copyWith(color: CourtsideColors.muted),
         bodySmall: text.bodySmall?.copyWith(color: CourtsideColors.muted),
+        labelSmall: text.labelSmall?.copyWith(
+          color: CourtsideColors.muted,
+          fontWeight: FontWeight.w800,
+          letterSpacing: .8,
+        ),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -106,7 +129,7 @@ abstract final class CourtsideTheme {
         elevation: 0,
         margin: const EdgeInsets.symmetric(vertical: 6),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(CourtsideRadii.large),
           side: const BorderSide(color: CourtsideColors.outline),
         ),
         clipBehavior: Clip.antiAlias,
@@ -134,6 +157,24 @@ abstract final class CourtsideTheme {
             fontWeight: FontWeight.w700,
           ),
         ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: CourtsideColors.surface,
+        selectedColor: accent,
+        disabledColor: CourtsideColors.surface,
+        side: const BorderSide(color: CourtsideColors.outline),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(CourtsideRadii.pill),
+        ),
+        labelStyle: const TextStyle(
+          color: CourtsideColors.cream,
+          fontWeight: FontWeight.w800,
+        ),
+        secondaryLabelStyle: const TextStyle(
+          color: CourtsideColors.background,
+          fontWeight: FontWeight.w900,
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
@@ -189,6 +230,17 @@ abstract final class CourtsideTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       progressIndicatorTheme: ProgressIndicatorThemeData(color: accent),
+      dataTableTheme: DataTableThemeData(
+        headingRowColor: WidgetStatePropertyAll(
+          accent.withValues(alpha: .12),
+        ),
+        headingTextStyle: const TextStyle(
+          color: CourtsideColors.cream,
+          fontWeight: FontWeight.w900,
+        ),
+        dataTextStyle: const TextStyle(color: CourtsideColors.cream),
+        dividerThickness: .6,
+      ),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: <TargetPlatform, PageTransitionsBuilder>{
           TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
@@ -197,4 +249,14 @@ abstract final class CourtsideTheme {
       ),
     );
   }
+
+  static TextStyle scoreStyle(BuildContext context, {double fontSize = 38}) =>
+      TextStyle(
+        color: CourtsideColors.cream,
+        fontSize: fontSize,
+        height: .95,
+        fontWeight: FontWeight.w900,
+        letterSpacing: -1.6,
+        fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+      );
 }

@@ -36,8 +36,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
     return Scaffold(
       appBar: AppBar(title: const Text('Sign in')),
-      body: SafeArea(
-        child: ListView(
+      body: SportsBackdrop(
+        child: SafeArea(
+          child: ListView(
           padding: const EdgeInsets.all(24),
           children: <Widget>[
             Center(
@@ -143,6 +144,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ],
+          ),
         ),
       ),
     );
@@ -173,9 +175,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Create account')),
-    body: ListView(
-      padding: const EdgeInsets.all(24),
-      children: <Widget>[
+    body: SportsBackdrop(
+      child: ListView(
+        padding: const EdgeInsets.all(24),
+        children: <Widget>[
+        const SportsPageHeader(
+          eyebrow: 'Join the action',
+          title: 'Create your account',
+          subtitle: 'Save favorites and choose the alerts that matter.',
+        ),
         Form(
           key: _form,
           child: Column(
@@ -271,7 +279,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ],
           ),
         ),
-      ],
+        ],
+      ),
     ),
   );
 }
@@ -295,9 +304,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Reset password')),
-    body: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
+    body: SportsBackdrop(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
         children: <Widget>[
           if (_sent)
             const Text(
@@ -321,6 +331,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             ),
           ],
         ],
+        ),
       ),
     ),
   );
@@ -332,20 +343,34 @@ class FavoritesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final AuthUser? user = ref.watch(authControllerProvider).valueOrNull;
     if (user == null) {
-      return const Scaffold(
-        body: HonestEmptyState(
-          title: 'Sign in for favorites',
-          message:
-              'Favorites and notification preferences are linked to your account.',
+      return Scaffold(
+        body: SportsBackdrop(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const HonestEmptyState(
+                  title: 'Build your courtside list',
+                  message: 'Sign in to follow teams, save tournaments, and manage alerts.',
+                ),
+                FilledButton.icon(
+                  onPressed: () => context.push('/login'),
+                  icon: const Icon(Icons.login_rounded),
+                  label: const Text('Sign in'),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Favorites')),
-      body: FutureBuilder<FavoritesState>(
-        future: ref.read(favoritesRepositoryProvider).fetch(),
-        initialData: ref.read(favoritesRepositoryProvider).cached(),
-        builder: (
+      body: SportsBackdrop(
+        child: FutureBuilder<FavoritesState>(
+          future: ref.read(favoritesRepositoryProvider).fetch(),
+          initialData: ref.read(favoritesRepositoryProvider).cached(),
+          builder: (
           BuildContext context,
           AsyncSnapshot<FavoritesState> snapshot,
         ) {
@@ -360,6 +385,11 @@ class FavoritesScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 112),
             children: <Widget>[
+              const SportsPageHeader(
+                eyebrow: 'Your courtside',
+                title: 'Favorites',
+                subtitle: 'The teams and tournaments you care about most.',
+              ),
               if (data.isOffline) const OfflineBanner(),
               const SectionHeader('Your collection'),
               Card(
@@ -378,7 +408,8 @@ class FavoritesScreen extends ConsumerWidget {
               ),
             ],
           );
-        },
+          },
+        ),
       ),
     );
   }
@@ -392,9 +423,15 @@ class SettingsScreen extends ConsumerWidget {
     final AuthUser? user = ref.watch(authControllerProvider).valueOrNull;
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 112),
-        children: <Widget>[
+      body: SportsBackdrop(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 112),
+          children: <Widget>[
+          const SportsPageHeader(
+            eyebrow: 'Profile & app',
+            title: 'Settings',
+            subtitle: 'Manage your account, alerts, privacy, and support.',
+          ),
           Card(
             color: CourtsideColors.surfaceHigh,
             child: ListTile(
@@ -503,7 +540,8 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
           ],
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -527,9 +565,18 @@ class _NotificationPreferencesScreenState
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Notification preferences')),
-    body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: <Widget>[
+    body: SportsBackdrop(
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: <Widget>[
+        const SportsPageHeader(
+          eyebrow: 'Stay informed',
+          title: 'Game alerts',
+          subtitle: 'Choose which moments should reach you.',
+        ),
+        PremiumPanel(
+          child: Column(
+            children: <Widget>[
         DropdownButtonFormField<String>(
           value: _type,
           decoration: const InputDecoration(labelText: 'Notification type'),
@@ -603,7 +650,11 @@ class _NotificationPreferencesScreenState
                   },
           child: Text(_busy ? 'Saving…' : 'Save preference'),
         ),
-      ],
+            ],
+          ),
+        ),
+        ],
+      ),
     ),
   );
 }

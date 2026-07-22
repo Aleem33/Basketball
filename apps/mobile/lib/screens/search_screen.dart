@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/providers.dart';
+import '../theme/courtside_theme.dart';
 import '../widgets/sports_ui.dart';
 import '../widgets/states.dart';
 
@@ -18,6 +19,7 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   Timer? _debounce;
   Future<Map<String, Object?>>? _results;
+  String _query = '';
 
   @override
   void dispose() {
@@ -28,17 +30,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void _search(String value) {
     _debounce?.cancel();
     final String query = value.trim();
+    _query = query;
     if (query.length < 2) {
       setState(() => _results = null);
       return;
     }
 
-    _debounce = Timer(const Duration(milliseconds: 350), () {
-      final Future<Map<String, Object?>> search = ref
-          .read(publicRepositoryProvider)
-          .search(query);
-      setState(() => _results = search);
-    });
+    _debounce = Timer(const Duration(milliseconds: 350), _runSearch);
+  }
+
+  void _runSearch() {
+    final Future<Map<String, Object?>> search = ref
+        .read(publicRepositoryProvider)
+        .search(_query);
+    setState(() => _results = search);
   }
 
   @override
@@ -47,8 +52,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     body: SportsBackdrop(
       child: Column(
         children: <Widget>[
+          const SportsPageHeader(
+            eyebrow: 'Discover',
+            title: 'Find your team.',
+            subtitle: 'Search tournaments, teams, and matchups.',
+          ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: SearchBar(
               autoFocus: true,
               hintText: 'Tournaments, teams, or games',
@@ -77,7 +87,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         if (snapshot.hasError) {
                           return FailureState(
                             error: snapshot.error!,
-                            onRetry: () => setState(() {}),
+                            onRetry: _runSearch,
                           );
                         }
 
@@ -99,6 +109,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         }
 
                         return ListView(
+                          padding: const EdgeInsets.only(bottom: 32),
                           children: <Widget>[
                             if (tournaments.isNotEmpty)
                               const SectionHeader('Tournaments'),
@@ -106,7 +117,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               final Map<String, Object?> row =
                                   (raw! as Map<Object?, Object?>)
                                       .cast<String, Object?>();
-                              return ListTile(
+                              return _SearchResultTile(
+                                icon: Icons.emoji_events_outlined,
                                 title: Text(row['name']! as String),
                                 onTap: () async {
                                   await context.push(
@@ -120,7 +132,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                               final Map<String, Object?> row =
                                   (raw! as Map<Object?, Object?>)
                                       .cast<String, Object?>();
-                              return ListTile(
+                              return _SearchResultTile(
+                                icon: Icons.groups_2_outlined,
                                 title: Text(row['name']! as String),
                                 onTap: () async {
                                   await context.push('/teams/${row['id']}');
@@ -142,7 +155,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                                   homeTeam?['name'] as String? ?? 'TBD';
                               final String away =
                                   awayTeam?['name'] as String? ?? 'TBD';
-                              return ListTile(
+                              return _SearchResultTile(
+                                icon: Icons.sports_basketball_outlined,
                                 title: Text('$home vs $away'),
                                 subtitle: Text(row['status']! as String),
                                 onTap: () async {
@@ -157,6 +171,41 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
         ],
       ),
+    ),
+  );
+}
+
+class _SearchResultTile extends StatelessWidget {
+  const _SearchResultTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.subtitle,
+  });
+
+  final IconData icon;
+  final Widget title;
+  final Widget? subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+    child: ListTile(
+      minTileHeight: 68,
+      leading: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: .12),
+          borderRadius: BorderRadius.circular(CourtsideRadii.small),
+        ),
+        child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+      ),
+      title: title,
+      subtitle: subtitle,
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: onTap,
     ),
   );
 }

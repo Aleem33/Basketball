@@ -1,14 +1,19 @@
 # CI/CD
 
-GitHub Actions contains four validation pipelines and a security pipeline.
+GitHub Actions contains two service validation pipelines, a unified mobile/full-stack pipeline, and a security pipeline.
 
 | Workflow        | Primary checks                                                                                                                              |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `backend.yml`   | Frozen install, Prisma generation/validation/migration, formatting, lint, typecheck, unit/integration tests, build, committed OpenAPI drift |
 | `admin-web.yml` | Lint, typecheck, coverage, production build, Chromium Playwright workflow                                                                   |
-| `flutter.yml`   | Deterministic scaffolding, Dart format/analyze/test/coverage, unsigned Android App Bundle                                                   |
-| `ios.yml`       | Analyze/test, CocoaPods, unsigned release iOS build on macOS                                                                                |
+| `flutter.yml`   | Android validation/build, unsigned iOS build on macOS, complete Docker stack readiness, and Android-emulator integration against that stack |
 | `security.yml`  | Dependency review, CodeQL, Gitleaks, API image build and Trivy HIGH/CRITICAL gate                                                           |
+
+## Mobile full-stack gate
+
+`flutter.yml` can be started manually with `workflow_dispatch` and also runs for relevant pull requests and pushes to `main`. Its Android and macOS/iOS build jobs run in parallel. The full-stack job starts only after both succeed, builds the complete Compose application, checks the API readiness endpoint and admin frontend, then launches an API 35 Android emulator and runs `integration_test/docker_app_test.dart` against the Docker API through `10.0.2.2`.
+
+Successful runs retain the unsigned Android App Bundle, emulator APK, coverage file, and unsigned iOS application archive for 14 days. Failed full-stack runs retain Compose logs for seven days. All Compose resources and volumes created by the runner are removed in the final cleanup step.
 
 Protect `main` and require all applicable checks, at least one independent review, current branch status, conversation resolution, and signed commits/tags according to client policy. GitHub environments should gate staging and production with designated approvers; workflows in this repository validate and build but intentionally do not invent a hosting target or deploy credentials.
 

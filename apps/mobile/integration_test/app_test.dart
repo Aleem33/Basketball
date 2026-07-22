@@ -28,6 +28,9 @@ void main() {
                 isStale: false,
               ),
             ),
+            announcementsProvider.overrideWith(
+              (Ref ref) async => const <AnnouncementSummary>[],
+            ),
           ],
           child: const TournamentApp(),
         ),
@@ -36,7 +39,7 @@ void main() {
       expect(find.text('No tournaments published'), findsOneWidget);
       expect(find.text('No games available'), findsOneWidget);
 
-      await tester.tap(find.text('Games').last);
+      await tester.tap(find.text('Scores').last);
       await tester.pumpAndSettle();
       expect(find.text('No published games'), findsOneWidget);
     },

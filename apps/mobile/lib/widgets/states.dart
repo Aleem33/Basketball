@@ -130,3 +130,36 @@ class OfflineBanner extends StatelessWidget {
     ],
   );
 }
+
+class StaleDataNotice extends StatelessWidget {
+  const StaleDataNotice({super.key});
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    container: true,
+    label: 'Showing saved information that may be out of date',
+    child: Container(
+      margin: const EdgeInsets.fromLTRB(16, 6, 16, 2),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      decoration: BoxDecoration(
+        color: CourtsideColors.warning.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(CourtsideRadii.medium),
+        border: Border.all(
+          color: CourtsideColors.warning.withValues(alpha: .28),
+        ),
+      ),
+      child: const Row(
+        children: <Widget>[
+          Icon(Icons.cloud_off_rounded, size: 18, color: CourtsideColors.warning),
+          SizedBox(width: 9),
+          Expanded(
+            child: Text(
+              'Showing saved scores. Pull to refresh when you’re online.',
+              style: TextStyle(color: CourtsideColors.cream),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

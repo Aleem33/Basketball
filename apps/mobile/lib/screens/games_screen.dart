@@ -35,7 +35,19 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: <Widget>[
-              const SliverAppBar.large(title: Text('Scores'), pinned: true),
+              const SliverAppBar(
+                title: Text('Scores'),
+                pinned: true,
+                toolbarHeight: 68,
+                backgroundColor: CourtsideColors.overlay,
+              ),
+              const SliverToBoxAdapter(
+                child: SportsPageHeader(
+                  eyebrow: 'Score center',
+                  title: 'Every game. Every point.',
+                  subtitle: 'Follow live action and find upcoming fixtures.',
+                ),
+              ),
               SliverToBoxAdapter(
                 child: _FilterBar(value: _filter, onChanged: _setFilter),
               ),
@@ -86,6 +98,7 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
       groups.putIfAbsent(day, () => <GameSummary>[]).add(game);
     }
     final List<Widget> children = <Widget>[];
+    if (data.isStale) children.add(const StaleDataNotice());
     for (final MapEntry<DateTime, List<GameSummary>> group in groups.entries) {
       children
         ..add(SectionHeader(_dayLabel(group.key)))

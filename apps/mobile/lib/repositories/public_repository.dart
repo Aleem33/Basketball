@@ -108,6 +108,25 @@ class PublicRepository {
     }
   }
 
+  Future<List<AnnouncementSummary>> announcements({String? tournamentId}) =>
+      _api.get<List<AnnouncementSummary>>(
+        '/public/announcements',
+        (Object? raw) {
+          final Map<String, Object?> page =
+              (raw! as Map).cast<String, Object?>();
+          return (page['items']! as List<Object?>)
+              .map(
+                (Object? item) => AnnouncementSummary.fromJson(
+                  (item! as Map).cast<String, Object?>(),
+                ),
+              )
+              .toList(growable: false);
+        },
+        query: <String, Object?>{
+          if (tournamentId != null) 'tournamentId': tournamentId,
+        },
+      );
+
   Future<Map<String, Object?>> tournament(String id) =>
       _api.get<Map<String, Object?>>(
         '/public/tournaments/$id',
