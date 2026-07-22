@@ -91,6 +91,10 @@ void main() {
 
     expect(find.text('Latest announcements'), findsNothing);
     expect(find.text('Karachi Kings'), findsOneWidget);
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
+    await tester.pumpAndSettle();
+
     expect(find.text('Summer Championship'), findsOneWidget);
   });
 }
