@@ -78,7 +78,18 @@ jobs:
           fi
           exit "$status"
       - name: Run Flutter unit and widget tests
-        run: flutter test --coverage
+        run: |
+          set +e
+          flutter test --coverage 2>&1 | tee flutter-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            diagnostic="$(tail -n 160 flutter-test.log)"
+            diagnostic="${diagnostic//'%'/'%25'}"
+            diagnostic="${diagnostic//$'\r'/'%0D'}"
+            diagnostic="${diagnostic//$'\n'/'%0A'}"
+            echo "::error title=Flutter test diagnostics::$diagnostic"
+          fi
+          exit "$status"
       - name: Build unsigned Android App Bundle
         run: >-
           flutter build appbundle --release
@@ -139,7 +150,17 @@ jobs:
             echo "::error title=Flutter analyzer diagnostics::$diagnostic"
           fi
           if [ "$status" -ne 0 ]; then exit "$status"; fi
-          flutter test
+          set +e
+          flutter test 2>&1 | tee flutter-test.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            diagnostic="$(tail -n 160 flutter-test.log)"
+            diagnostic="${diagnostic//'%'/'%25'}"
+            diagnostic="${diagnostic//$'\r'/'%0D'}"
+            diagnostic="${diagnostic//$'\n'/'%0A'}"
+            echo "::error title=Flutter test diagnostics::$diagnostic"
+          fi
+          exit "$status"
       - name: Install CocoaPods dependencies
         run: cd ios && pod install --repo-update
       - name: Build unsigned release iOS application
