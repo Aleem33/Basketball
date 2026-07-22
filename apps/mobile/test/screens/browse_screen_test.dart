@@ -20,7 +20,9 @@ void main() {
     currentPeriod: 4,
   );
 
-  Widget host({required Future<List<AnnouncementSummary>> announcements}) =>
+  Widget host({
+    required Future<List<AnnouncementSummary>> Function() announcements,
+  }) =>
       ProviderScope(
         overrides: [
           gamesProvider.overrideWith(
@@ -42,7 +44,7 @@ void main() {
               isStale: false,
             ),
           ),
-          announcementsProvider.overrideWith((Ref ref) => announcements),
+          announcementsProvider.overrideWith((Ref ref) => announcements()),
         ],
         child: MaterialApp(
           theme: CourtsideTheme.dark(const Color(0xFF174A7E)),
@@ -55,7 +57,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       host(
-        announcements: Future<List<AnnouncementSummary>>.value(
+        announcements: () => Future<List<AnnouncementSummary>>.value(
           <AnnouncementSummary>[
             AnnouncementSummary(
               id: 'announcement',
@@ -80,7 +82,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       host(
-        announcements: Future<List<AnnouncementSummary>>.error(
+        announcements: () => Future<List<AnnouncementSummary>>.error(
           Exception('Unavailable'),
         ),
       ),
