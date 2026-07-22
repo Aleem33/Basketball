@@ -3,7 +3,7 @@ name: Mobile builds and full-stack Android
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, 'codex/**']
     paths:
       - 'apps/mobile/**'
       - 'apps/api/**'
