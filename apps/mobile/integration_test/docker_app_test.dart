@@ -7,6 +7,17 @@ import 'package:tournament_mobile/app.dart';
 import 'package:tournament_mobile/providers/providers.dart';
 import 'package:tournament_mobile/router/app_router.dart';
 
+Future<void> pumpUntilVisible(
+  WidgetTester tester,
+  Finder finder, {
+  Duration timeout = const Duration(seconds: 15),
+}) async {
+  final DateTime deadline = DateTime.now().add(timeout);
+  while (finder.evaluate().isEmpty && DateTime.now().isBefore(deadline)) {
+    await tester.pump(const Duration(milliseconds: 250));
+  }
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -28,18 +39,21 @@ void main() {
     );
     await tester.pumpAndSettle(const Duration(milliseconds: 250));
 
+    await pumpUntilVisible(tester, find.text('No games available'));
     expect(find.text('No games available'), findsOneWidget);
     await tester.drag(
       find.byType(CustomScrollView),
       const Offset(0, -360),
     );
     await tester.pumpAndSettle();
+    await pumpUntilVisible(tester, find.text('No tournaments published'));
     expect(find.text('No tournaments published'), findsOneWidget);
     expect(find.text('Dropped possession'), findsNothing);
     expect(find.text('You’re offline'), findsNothing);
 
     await tester.tap(find.text('Scores').last);
     await tester.pumpAndSettle();
+    await pumpUntilVisible(tester, find.text('No published games'));
     expect(find.text('No published games'), findsOneWidget);
   });
 }
