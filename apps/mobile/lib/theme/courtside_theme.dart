@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' show FontFeature;
 
 abstract final class CourtsideSpacing {
   static const double xs = 6;
