@@ -11,7 +11,7 @@ val signingFile = rootProject.file("key.properties")
 if (signingFile.exists()) signingFile.inputStream().use { signingProperties.load(it) }
 
 android {
-    namespace = (project.findProperty("APPLICATION_ID") as String?) ?: "com.client.tournament"
+    namespace = "com.client.tournament"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
